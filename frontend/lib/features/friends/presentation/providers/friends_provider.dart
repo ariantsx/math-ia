@@ -79,4 +79,10 @@ class FriendsProvider extends ChangeNotifier {
     }
     return lvl;
   }
+
+  // --- LIMPIEZA DE SESIÓN ---
+  void clearData() {
+    _leaderboard = [];
+    notifyListeners();
+  }
 }

@@ -1,9 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:math_ia/core/providers/user_provider.dart';
+import 'package:math_ia/features/auth/presentation/screens/login_screen.dart';
+import 'package:math_ia/features/exams/presentation/providers/exams_provider.dart';
+import 'package:math_ia/features/friends/presentation/providers/friends_provider.dart';
 import 'package:provider/provider.dart';
 
 class GamesScreen extends StatelessWidget {
   const GamesScreen({super.key});
+
+  void _logout(BuildContext context) {
+    // 1. Limpiamos todos los datos en memoria para que no se filtren al siguiente usuario
+    context.read<UserProvider>().clearData();
+    context.read<ExamsProvider>().clearData();
+    context.read<FriendsProvider>().clearData();
+
+    // 2. Aquí, más adelante, puedes borrar el Token (JWT) guardado en el dispositivo.
+
+    // 3. Navegación segura: Destruye el historial de pantallas y te lleva al Login
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (Route<dynamic> route) => false,
+    );
+  }
 
   // --- FUNCIÓN PARA MOSTRAR EL POPUP DE JUEGOS ---
   void _showGamesPopup(BuildContext context) {
@@ -225,12 +244,62 @@ class GamesScreen extends StatelessWidget {
                   ],
                 ),
 
-                // Bloque Derecho: Botón de Configuración (Tres rayitas)
-                IconButton(
-                  icon: const Icon(Icons.menu, size: 28),
-                  onPressed: () {
-                    // Acción para abrir configuraciones
+                // Reemplaza tu IconButton de las tres rayitas por este PopupMenuButton
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.menu, size: 30, color: Colors.black87),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  offset: const Offset(
+                    0,
+                    40,
+                  ), // Desplaza el menú un poco hacia abajo para que no cubra el ícono
+                  onSelected: (String value) {
+                    if (value == 'profile') {
+                      // TODO: Implementar vista de perfil más adelante
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Próximamente: Ver Perfil'),
+                        ),
+                      );
+                    } else if (value == 'logout') {
+                      // Flujo de Cerrar Sesión
+                      _logout(context);
+                    }
                   },
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<String>>[
+                        const PopupMenuItem<String>(
+                          value: 'profile',
+                          child: Row(
+                            children: [
+                              Icon(Icons.person, color: Colors.blueAccent),
+                              SizedBox(width: 12),
+                              Text(
+                                'Ver perfil',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuDivider(), // Una pequeña línea separadora
+                        const PopupMenuItem<String>(
+                          value: 'logout',
+                          child: Row(
+                            children: [
+                              Icon(Icons.logout, color: Colors.redAccent),
+                              SizedBox(width: 12),
+                              Text(
+                                'Cerrar sesión',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                 ),
               ],
             ),

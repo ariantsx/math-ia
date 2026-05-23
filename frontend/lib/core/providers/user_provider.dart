@@ -136,4 +136,18 @@ class UserProvider extends ChangeNotifier {
       debugPrint("Error sincronizando: $e");
     }
   }
+
+  // --- LIMPIEZA DE SESIÓN ---
+  void clearData() {
+    // Reemplaza _userId por el nombre exacto de la variable que uses para el ID
+    _userId = 0;
+    _name = '';
+    _exp = 0;
+    _coins = 500;
+    _lives = 5;
+    _examHistory = [];
+    _inventory = {'hats': [], 'glasses': [], 'shirts': []};
+    _equipped = {'hats': null, 'glasses': null, 'shirts': null};
+    notifyListeners();
+  }
 }

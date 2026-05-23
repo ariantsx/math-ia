@@ -153,7 +153,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                     icon: const Icon(Icons.add),
                     label: const Text(
                       'Agregar Amigos',
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
