@@ -144,6 +144,7 @@ async def get_user_profile(user_id: int, db: Session = Depends(get_db)):
     return {
         "id": user.id,
         "name": user.name,
+        "email": user.email,
         "exp": user.exp,
         "coins": user.coins,
         "lives": user.lives,

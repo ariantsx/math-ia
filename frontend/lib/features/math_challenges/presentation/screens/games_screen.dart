@@ -3,6 +3,7 @@ import 'package:math_ia/core/providers/user_provider.dart';
 import 'package:math_ia/features/auth/presentation/screens/login_screen.dart';
 import 'package:math_ia/features/exams/presentation/providers/exams_provider.dart';
 import 'package:math_ia/features/friends/presentation/providers/friends_provider.dart';
+import 'package:math_ia/features/profile/presentation/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 
 class GamesScreen extends StatelessWidget {
@@ -244,7 +245,6 @@ class GamesScreen extends StatelessWidget {
                   ],
                 ),
 
-                // Reemplaza tu IconButton de las tres rayitas por este PopupMenuButton
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.menu, size: 30, color: Colors.black87),
                   shape: RoundedRectangleBorder(
@@ -256,10 +256,11 @@ class GamesScreen extends StatelessWidget {
                   ), // Desplaza el menú un poco hacia abajo para que no cubra el ícono
                   onSelected: (String value) {
                     if (value == 'profile') {
-                      // TODO: Implementar vista de perfil más adelante
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Próximamente: Ver Perfil'),
+                      // Navegamos apilando la pantalla de Perfil
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfileScreen(),
                         ),
                       );
                     } else if (value == 'logout') {

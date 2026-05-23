@@ -9,6 +9,7 @@ class UserProvider extends ChangeNotifier {
   // Datos del usuario en memoria
   int _userId = 0;
   String _name = "";
+  String _email = '';
   int _exp = 0;
   int _coins = 0;
   int _lives = 5;
@@ -25,7 +26,8 @@ class UserProvider extends ChangeNotifier {
   // Getters para que la UI lea los datos
   int get id => _userId;
   String get name => _name;
-  // int get level => _level;
+  String get email => _email;
+
   // 1. Calcula en qué nivel estás basado en tu Experiencia Total
   int get level {
     int lvl = 1;
@@ -78,6 +80,7 @@ class UserProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _name = data['name'];
+        _email = data['email'] ?? '';
         _exp = data['exp'];
         _coins = data['coins'];
         _lives = data['lives'];
