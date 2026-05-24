@@ -3,6 +3,7 @@ import 'package:math_ia/core/providers/user_provider.dart';
 import 'package:math_ia/features/auth/presentation/screens/login_screen.dart';
 import 'package:math_ia/features/exams/presentation/providers/exams_provider.dart';
 import 'package:math_ia/features/friends/presentation/providers/friends_provider.dart';
+import 'package:math_ia/features/math_challenges/presentation/screens/worlds_map_screen.dart';
 import 'package:math_ia/features/profile/presentation/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,10 @@ class GamesScreen extends StatelessWidget {
   }
 
   // --- FUNCIÓN PARA MOSTRAR EL POPUP DE JUEGOS ---
-  void _showGamesPopup(BuildContext context) {
+  // Importa la nueva pantalla que crearemos
+  // import 'worlds_map_screen.dart';
+
+  void _buildGamesPopup(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -35,18 +39,19 @@ class GamesScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Container(
-            padding: const EdgeInsets.all(16),
-            // Limitamos el tamaño del popup
-            constraints: const BoxConstraints(maxHeight: 400),
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Cabecera del Popup con Título y Botón de Cerrar (X)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Elige un Juego',
+                      'Modos de Juego',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -54,40 +59,72 @@ class GamesScreen extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.grey),
-                      onPressed: () =>
-                          Navigator.of(context).pop(), // Cierra el popup
+                      onPressed: () => Navigator.pop(context),
                     ),
                   ],
                 ),
-                const Divider(),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
 
-                // Lista de Juegos (Cuadritos)
-                Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 2, // Dos columnas
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    children: [
-                      _buildGameCard(
-                        context,
-                        title: 'Álgebra\nRápida',
-                        icon: Icons.calculate,
-                        color: Colors.blueAccent,
+                // Botón Gigante de Aventura Principal
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context); // Cierra el popup
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WorldsMapScreen(),
                       ),
-                      _buildGameCard(
-                        context,
-                        title: 'Reto\nGeometría',
-                        icon: Icons.category,
-                        color: Colors.orangeAccent,
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.blueAccent, Colors.blue.shade800],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      _buildGameCard(
-                        context,
-                        title: 'Lógica\nIA',
-                        icon: Icons.psychology,
-                        color: Colors.purpleAccent,
-                      ),
-                    ],
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.blue.withOpacity(0.4),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: const Column(
+                      children: [
+                        Icon(Icons.map, size: 60, color: Colors.white),
+                        SizedBox(height: 16),
+                        Text(
+                          'AVENTURA PRINCIPAL',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Explora los 6 mundos matemáticos',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Espacio para futuros minijuegos (ej. Duelos, Reto Diario)
+                const Text(
+                  'Más modos de juego próximamente...',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
               ],
@@ -334,7 +371,7 @@ class GamesScreen extends StatelessWidget {
                     width: 250,
                     height: 60,
                     child: ElevatedButton(
-                      onPressed: () => _showGamesPopup(context),
+                      onPressed: () => _buildGamesPopup(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             Colors.green, // Color que llama a la acción
