@@ -3,8 +3,13 @@ import 'package:math_ia/features/lessons/presentation/screens/lesson_screen.dart
 
 class LevelsScreen extends StatelessWidget {
   final Map<String, dynamic> worldData;
+  final int completedLevels; // <-- Recibimos el progreso del usuario
 
-  const LevelsScreen({super.key, required this.worldData});
+  const LevelsScreen({
+    super.key,
+    required this.worldData,
+    required this.completedLevels,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,19 +31,58 @@ class LevelsScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
         itemCount: levels.length,
         itemBuilder: (context, index) {
-          // Lógica para alternar izquierda y derecha (Efecto Zig-Zag)
           final isLeft = index % 2 == 0;
+
+          // --- LÓGICA DE ESTADOS DEL NIVEL ---
+          final bool isCompleted = index < completedLevels;
+          final bool isCurrent = index == completedLevels;
+          final bool isLocked = index > completedLevels;
+
+          // Asignación dinámica de colores e íconos según el estado
+          Color avatarColor;
+          Color cardColor;
+          Color textColor;
+          Widget circleContent;
+
+          if (isCompleted) {
+            avatarColor = Colors.green;
+            cardColor = Colors.green.shade50;
+            textColor = Colors.green.shade800;
+            circleContent = const Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 28,
+            );
+          } else if (isCurrent) {
+            avatarColor = worldColor;
+            cardColor = Colors.white;
+            textColor = Colors.black87;
+            circleContent = Text(
+              '${index + 1}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          } else {
+            avatarColor = Colors.grey.shade400;
+            cardColor = Colors.grey.shade100;
+            textColor = Colors.grey.shade500;
+            circleContent = const Icon(
+              Icons.lock,
+              color: Colors.white,
+              size: 24,
+            );
+          }
 
           return Row(
             mainAxisAlignment: isLeft
                 ? MainAxisAlignment.start
                 : MainAxisAlignment.end,
             children: [
-              // Nivel en diseño Zig-Zag
               Container(
-                width:
-                    MediaQuery.of(context).size.width *
-                    0.65, // Ocupa el 65% de la pantalla
+                width: MediaQuery.of(context).size.width * 0.65,
                 margin: const EdgeInsets.only(bottom: 24),
                 child: Stack(
                   clipBehavior: Clip.none,
@@ -48,9 +92,16 @@ class LevelsScreen extends StatelessWidget {
                   children: [
                     // Tarjeta del nivel
                     Card(
-                      elevation: 4,
+                      elevation: isLocked
+                          ? 0
+                          : 4, // Sin sombra si está bloqueado
+                      color: cardColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
+                        // Borde resaltado SOLO para el nivel actual a jugar
+                        side: isCurrent
+                            ? BorderSide(color: worldColor, width: 2)
+                            : BorderSide.none,
                       ),
                       margin: EdgeInsets.only(
                         left: isLeft ? 40 : 0,
@@ -64,16 +115,19 @@ class LevelsScreen extends StatelessWidget {
                             Text(
                               'Nivel ${index + 1}',
                               style: TextStyle(
-                                color: worldColor,
+                                color: isCompleted
+                                    ? Colors.green
+                                    : (isLocked ? Colors.grey : worldColor),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               levels[index],
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
+                                color: textColor,
                               ),
                             ),
                           ],
@@ -81,30 +135,36 @@ class LevelsScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // Círculo flotante con número (simula la piedra del camino)
+                    // Círculo flotante (Piedra del camino)
                     Positioned(
                       left: isLeft ? 0 : null,
                       right: isLeft ? null : 0,
                       child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LessonScreen(),
-                            ),
-                          );
-                          ;
-                        },
+                        // AQUÍ ESTÁ EL BLOQUEO: Si isLocked es true, onTap es null (botón desactivado)
+                        onTap: isLocked
+                            ? null
+                            : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LessonScreen(),
+                                  ),
+                                );
+                                // ScaffoldMessenger.of(context).showSnackBar(
+                                //   SnackBar(
+                                //     content: Text(
+                                //       'Iniciando: ${levels[index]}',
+                                //     ),
+                                //   ),
+                                // );
+                              },
                         child: CircleAvatar(
-                          radius: 25,
-                          backgroundColor: worldColor,
-                          child: Text(
-                            '${index + 1}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          radius: 28,
+                          backgroundColor: Colors.white, // Borde blanco sutil
+                          child: CircleAvatar(
+                            radius: 24,
+                            backgroundColor: avatarColor,
+                            child: circleContent,
                           ),
                         ),
                       ),

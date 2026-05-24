@@ -102,12 +102,18 @@ class WorldsMapScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
+                  // En worlds_map_screen.dart, dentro de tu ListView.builder:
                   child: InkWell(
                     onTap: () {
+                      // Pasamos tanto la información del mundo como los niveles completados
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => LevelsScreen(worldData: world),
+                          builder: (context) => LevelsScreen(
+                            worldData: world,
+                            completedLevels:
+                                completedLevels, // <-- NUEVO PARÁMETRO
+                          ),
                         ),
                       );
                     },
