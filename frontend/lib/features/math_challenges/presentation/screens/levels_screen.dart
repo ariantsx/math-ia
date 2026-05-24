@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:math_ia/features/lessons/presentation/screens/lesson_screen.dart';
 
 class LevelsScreen extends StatelessWidget {
   final Map<String, dynamic> worldData;
@@ -86,12 +87,13 @@ class LevelsScreen extends StatelessWidget {
                       right: isLeft ? null : 0,
                       child: InkWell(
                         onTap: () {
-                          // TODO: Aquí navegaremos al motor del juego con el subtema seleccionado
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Iniciando: ${levels[index]}'),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LessonScreen(),
                             ),
                           );
+                          ;
                         },
                         child: CircleAvatar(
                           radius: 25,

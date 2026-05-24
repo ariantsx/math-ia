@@ -3,6 +3,7 @@ import 'package:math_ia/core/providers/user_provider.dart';
 import 'package:math_ia/features/exams/presentation/providers/exams_provider.dart';
 import 'package:math_ia/features/friends/presentation/providers/friends_provider.dart';
 import 'package:math_ia/features/home/presentation/providers/home_provider.dart';
+import 'package:math_ia/features/lessons/presentation/providers/lesson_provider.dart';
 import 'package:provider/provider.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
@@ -16,6 +17,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => FriendsProvider()),
         ChangeNotifierProvider(create: (_) => ExamsProvider()),
+        ChangeNotifierProvider(create: (_) => LessonProvider()),
       ],
       child: const MyApp(),
     ),

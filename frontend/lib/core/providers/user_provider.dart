@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -10,6 +11,14 @@ class UserProvider extends ChangeNotifier {
   int _userId = 0;
   String _name = "";
   String _email = '';
+
+  // Variable para controlar el tiempo
+  Timer? _lifeTimer;
+
+  // NUEVO: Variable para el conteo en segundos (300 segundos = 5 minutos)
+  int _secondsUntilNextLife = 300;
+
+  // Estadísticas del jugador
   int _exp = 0;
   int _coins = 0;
   int _lives = 5;
@@ -43,6 +52,66 @@ class UserProvider extends ChangeNotifier {
     return lvl;
   }
 
+  // ==========================================
+  // CONSTRUCTOR: Iniciar el temporizador al cargar el Provider
+  // ==========================================
+  UserProvider() {
+    _startLifeTimer();
+  }
+
+  // MODIFICADO: Ahora el reloj "hace tic" cada 1 segundo
+  void _startLifeTimer() {
+    _lifeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_lives < 5) {
+        _secondsUntilNextLife--;
+
+        // Si el tiempo llega a cero, damos una vida y reiniciamos el reloj
+        if (_secondsUntilNextLife <= 0) {
+          _lives++;
+          _secondsUntilNextLife = 300;
+          _syncWithBackend(); // Guardamos en la base de datos
+        }
+        notifyListeners(); // Avisamos a la pantalla CADA SEGUNDO para que actualice el texto
+      } else {
+        // Si ya tiene 5 vidas, mantenemos el reloj en 5 minutos
+        if (_secondsUntilNextLife != 300) {
+          _secondsUntilNextLife = 300;
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // ¡Muy importante! Apagamos el temporizador si el Provider se destruye
+    _lifeTimer?.cancel();
+    super.dispose();
+  }
+
+  // ==========================================
+  // FUNCIONES DE GAMIFICACIÓN
+  // ==========================================
+
+  void addCoins(int amount) {
+    _coins += amount;
+    notifyListeners();
+    _syncWithBackend(); // Sincronizamos con PostgreSQL
+  }
+
+  void addExp(int amount) {
+    _exp += amount;
+    notifyListeners();
+    _syncWithBackend(); // Sincronizamos con PostgreSQL
+  }
+
+  void deductLife() {
+    if (_lives > 0) {
+      _lives--;
+      notifyListeners();
+      _syncWithBackend(); // Sincronizamos con PostgreSQL
+    }
+  }
+
   // 2. Calcula cuánta experiencia llevas EN TU NIVEL ACTUAL
   int get currentLevelExp {
     int expNeeded = _baseExp;
@@ -68,6 +137,15 @@ class UserProvider extends ChangeNotifier {
   int get exp => _exp;
   int get coins => _coins;
   int get lives => _lives;
+
+  // NUEVO: Getter que formatea el tiempo a un texto bonito como "04:59"
+  String get timeUntilNextLifeFormatted {
+    if (_lives >= 5) return 'MÁX';
+    final minutes = (_secondsUntilNextLife ~/ 60).toString().padLeft(2, '0');
+    final seconds = (_secondsUntilNextLife % 60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+
   Map<String, dynamic> get inventory => _inventory;
   Map<String, dynamic> get equipped => _equipped;
   List<dynamic> get examHistory => _examHistory;

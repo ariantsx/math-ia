@@ -181,6 +181,15 @@ class GamesScreen extends StatelessWidget {
     // Obtenemos el usuario en tiempo real
     final user = context.watch<UserProvider>();
 
+    // Calculamos el progreso exacto para la barra de experiencia
+    int expNeeded = 100;
+    int tempExp = user.exp;
+    while (tempExp >= expNeeded) {
+      tempExp -= expNeeded;
+      expNeeded = (expNeeded * 1.5).toInt();
+    }
+    double expProgress = tempExp / expNeeded;
+
     return SafeArea(
       child: Column(
         children: [
@@ -188,7 +197,7 @@ class GamesScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
-              vertical: 12.0,
+              vertical: 16.0,
             ),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -201,99 +210,17 @@ class GamesScreen extends StatelessWidget {
               ],
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Bloque Izquierdo: Nick, Nivel y Experiencia
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        user.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Text(
-                            'Lvl ${user.level}',
-                            style: const TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(width: 8),
-                          // Barra de experiencia
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: LinearProgressIndicator(
-                                value: user.currentLevelExp / user.maxLevelExp,
-                                minHeight: 8,
-                                backgroundColor: Colors.grey[300],
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${user.maxLevelExp}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(width: 16),
-
-                // Bloque Central: Monedas y Vidas
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.monetization_on,
-                          color: Colors.amber,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${user.coins}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.favorite, color: Colors.red, size: 20),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${user.lives}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-
+                // 1. IZQUIERDA: EL MENÚ DE TRES RAYAS
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.menu, size: 30, color: Colors.black87),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  offset: const Offset(
-                    0,
-                    40,
-                  ), // Desplaza el menú un poco hacia abajo para que no cubra el ícono
+                  offset: const Offset(0, 40),
                   onSelected: (String value) {
                     if (value == 'profile') {
-                      // Navegamos apilando la pantalla de Perfil
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -301,7 +228,6 @@ class GamesScreen extends StatelessWidget {
                         ),
                       );
                     } else if (value == 'logout') {
-                      // Flujo de Cerrar Sesión
                       _logout(context);
                     }
                   },
@@ -320,7 +246,7 @@ class GamesScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        const PopupMenuDivider(), // Una pequeña línea separadora
+                        const PopupMenuDivider(),
                         const PopupMenuItem<String>(
                           value: 'logout',
                           child: Row(
@@ -338,6 +264,139 @@ class GamesScreen extends StatelessWidget {
                           ),
                         ),
                       ],
+                ),
+
+                // 2. CENTRO: NOMBRE, NIVEL Y BARRA DE EXPERIENCIA
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                user.name, // <-- Quitamos el .toUpperCase()
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                ),
+                                overflow: TextOverflow
+                                    .ellipsis, // Si el nombre es muy largo, pone "..."
+                              ),
+                            ),
+                            Text(
+                              'Lvl ${user.level}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+
+                        // BARRA DE EXPERIENCIA CON TEXTO SUPERPUESTO
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: LinearProgressIndicator(
+                                value: expProgress,
+                                minHeight:
+                                    14, // <-- La hicimos un poquito más gruesa para que quepa el texto
+                                backgroundColor: Colors.grey.shade200,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                            // Texto de Experiencia
+                            Text(
+                              '$tempExp / $expNeeded XP',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                // Pequeña sombra para que el texto resalte sobre el fondo gris y el azul
+                                shadows: [
+                                  Shadow(
+                                    offset: Offset(0.5, 0.5),
+                                    blurRadius: 2.0,
+                                    color: Colors.black54,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // 3. DERECHA: ESTADÍSTICAS DEL USUARIO
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Monedas
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.monetization_on,
+                          color: Colors.amber,
+                          size: 24,
+                        ),
+                        Text(
+                          '${user.coins}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 12),
+                    // Vidas + Temporizador
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.favorite,
+                              color: Colors.redAccent,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              '${user.lives}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (user.lives < 5)
+                          Text(
+                            user.timeUntilNextLifeFormatted,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.black54,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),

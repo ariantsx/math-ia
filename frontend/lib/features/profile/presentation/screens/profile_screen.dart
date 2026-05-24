@@ -77,7 +77,7 @@ class ProfileScreen extends StatelessWidget {
             _buildUserAvatar(userProvider.equipped),
             const SizedBox(height: 16),
             Text(
-              userProvider.name.toUpperCase(),
+              userProvider.name,
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -195,11 +195,14 @@ class ProfileScreen extends StatelessWidget {
             Row(
               children: [
                 Expanded(
+                  // Modificamos el valor que se le envía a la tarjeta de Vidas
                   child: _buildStatCard(
                     Icons.favorite,
                     Colors.redAccent,
                     'Vidas',
-                    '${userProvider.lives}',
+                    userProvider.lives >= 5
+                        ? '${userProvider.lives} (MÁX)'
+                        : '${userProvider.lives} (${userProvider.timeUntilNextLifeFormatted})',
                   ),
                 ),
                 const SizedBox(width: 16),
