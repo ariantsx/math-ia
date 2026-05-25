@@ -145,6 +145,31 @@ async def get_user_profile(user_id: int, db: Session = Depends(get_db)):
     if not user:
         return JSONResponse(status_code=404, content={"message": "Usuario no encontrado"})
     
+    # LÓGICA DE TIEMPO OFFLINE
+    seconds_until_next = 300 # Por defecto 5 minutos (300 seg)
+    
+    if user.lives < 5 and user.last_life_update:
+        now = datetime.utcnow()
+        delta = (now - user.last_life_update).total_seconds()
+        
+        recovered_lives = int(delta // 300) # Cuántas vidas de 5 mins recuperó
+        
+        if recovered_lives > 0:
+            user.lives = min(5, user.lives + recovered_lives)
+            
+            if user.lives == 5:
+                user.last_life_update = None # Ya está lleno
+            else:
+                # Adelantamos el reloj la cantidad exacta de vidas que se le dio
+                user.last_life_update += timedelta(seconds=recovered_lives * 300)
+            
+            db.commit() # Guardamos las nuevas vidas calculadas
+            
+        # Calcular los segundos restantes para la próxima vida (para mandarlo a Flutter)
+        if user.lives < 5 and user.last_life_update:
+            delta_now = (datetime.utcnow() - user.last_life_update).total_seconds()
+            seconds_until_next = 300 - int(delta_now)
+
     return {
         "id": user.id,
         "name": user.name,
@@ -155,13 +180,18 @@ async def get_user_profile(user_id: int, db: Session = Depends(get_db)):
         "inventory": user.inventory,
         "equipped": user.equipped,
         "exam_history": user.exam_history,
-        "world_progress": user.world_progress
+        "world_progress": user.world_progress,
+        "next_life_in_seconds": seconds_until_next, # <-- DATO CLAVE
     }
 
-# Ruta 2: Sincronizar compras y equipamiento
+# --- 2. AL ACTUALIZAR ESTADÍSTICAS (PUT /api/users/{user_id}/stats) ---
 @app.put("/api/users/{user_id}/sync")
 async def sync_user_data(user_id: int, data: UserUpdateData, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == user_id).first()
+
+    # Si bajó de 5 vidas a 4 vidas, ESTE es el momento exacto donde empieza a correr el reloj
+    if data.lives < user.lives and user.lives == 5:
+        user.last_life_update = datetime.utcnow()
     
     user.exp = data.exp
     user.coins = data.coins

@@ -172,6 +172,9 @@ class UserProvider extends ChangeNotifier {
         // Leemos el progreso al iniciar sesión
         _worldProgress = data['world_progress'] ?? {};
 
+        // --- NUEVO: Sincronizar el reloj del celular con el reloj del servidor ---
+        _secondsUntilNextLife = data['next_life_in_seconds'] ?? 300;
+
         notifyListeners(); // Actualiza todas las pantallas
       }
     } catch (e) {

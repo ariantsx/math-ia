@@ -35,11 +35,14 @@ class User(Base):
     # Lista de IDs de amigos (ej. [2, 5, 12])
     friends = Column(JSON, default=[])
 
-    # --- NUEVA COLUMNA: Historial de exámenes ---
+    # Historial de exámenes ---
     exam_history = Column(JSON, default=[])
 
-    # NUEVO: Guardaremos el progreso como un diccionario {"id_del_mundo": niveles_completados}
+    # Guardaremos el progreso como un diccionario {"id_del_mundo": niveles_completados}
     world_progress = Column(JSON, default={})
+
+    # Guardar el momento exacto en que empezó a regenerar vidas
+    last_life_update = Column(DateTime, default=None)
 
 # --- NUEVA TABLA: Banco de Preguntas ---
 class Question(Base):
