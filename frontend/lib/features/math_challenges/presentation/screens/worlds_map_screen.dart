@@ -82,7 +82,6 @@ class WorldsMapScreen extends StatelessWidget {
           ),
 
           // LISTA DE MUNDOS
-          // LISTA DE MUNDOS
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
@@ -94,53 +93,100 @@ class WorldsMapScreen extends StatelessWidget {
                 // AHORA ES REAL: Leemos cuántos niveles ha pasado de ESTE mundo específico
                 final int completedLevels =
                     userProvider.worldProgress[world['id']] ?? 0;
-                final double progress = completedLevels / totalLevels;
+                final double progress = totalLevels > 0
+                    ? (completedLevels / totalLevels)
+                    : 0.0;
+
+                // --- NUEVA LÓGICA DE BLOQUEO ---
+                bool isUnlocked = true;
+                if (index > 0) {
+                  final previousWorld = worlds[index - 1];
+                  final int prevTotal = previousWorld['levels'].length;
+                  final int prevCompleted =
+                      userProvider.worldProgress[previousWorld['id']] ?? 0;
+
+                  // Si el mundo anterior no está completado al 100%, se bloquea este
+                  if (prevCompleted < prevTotal) {
+                    isUnlocked = false;
+                  }
+                }
 
                 return Card(
                   margin: const EdgeInsets.only(bottom: 16),
-                  elevation: 2,
+                  elevation: isUnlocked
+                      ? 2
+                      : 0, // Quitamos sombra si está bloqueado
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  // En worlds_map_screen.dart, dentro de tu ListView.builder:
-                  // En worlds_map_screen.dart:
                   child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LevelsScreen(
-                            worldData:
-                                world, // <-- Ahora solo pasamos los datos fijos del mundo
-                          ),
-                        ),
-                      );
-                    },
+                    onTap: isUnlocked
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LevelsScreen(
+                                  worldData:
+                                      world, // <-- Ahora solo pasamos los datos fijos del mundo
+                                ),
+                              ),
+                            );
+                          }
+                        : () {
+                            // Alerta si intenta ingresar a un mundo bloqueado
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text(
+                                  '🔒 Completa el mundo anterior para desbloquear',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                backgroundColor: Colors.grey.shade800,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                            );
+                          },
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: world['color'].withOpacity(0.3),
+                          color: isUnlocked
+                              ? world['color'].withOpacity(0.3)
+                              : Colors.grey.shade300,
                           width: 2,
                         ),
+                        color: isUnlocked
+                            ? Colors.transparent
+                            : Colors
+                                  .grey
+                                  .shade100, // Fondo grisáceo si está bloqueado
                       ),
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(16),
                         leading: CircleAvatar(
                           radius: 30,
-                          backgroundColor: world['color'].withOpacity(0.1),
+                          backgroundColor: isUnlocked
+                              ? world['color'].withOpacity(0.1)
+                              : Colors.grey.shade200,
                           child: Icon(
-                            world['icon'],
-                            color: world['color'],
+                            isUnlocked ? world['icon'] : Icons.lock,
+                            color: isUnlocked
+                                ? world['color']
+                                : Colors.grey.shade400,
                             size: 32,
                           ),
                         ),
                         title: Text(
                           world['name'],
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
+                            color: isUnlocked
+                                ? Colors.black87
+                                : Colors.grey.shade500,
                           ),
                         ),
 
@@ -151,8 +197,14 @@ class WorldsMapScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                world['subtitle'],
-                                style: TextStyle(color: Colors.grey.shade600),
+                                isUnlocked
+                                    ? world['subtitle']
+                                    : 'Mundo bloqueado',
+                                style: TextStyle(
+                                  color: isUnlocked
+                                      ? Colors.grey.shade600
+                                      : Colors.grey.shade400,
+                                ),
                               ),
                               const SizedBox(height: 12),
 
@@ -162,18 +214,26 @@ class WorldsMapScreen extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    '$completedLevels/$totalLevels niveles',
+                                    isUnlocked
+                                        ? '$completedLevels/$totalLevels niveles'
+                                        : '0/$totalLevels niveles',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: world['color'],
+                                      color: isUnlocked
+                                          ? world['color']
+                                          : Colors.grey.shade400,
                                     ),
                                   ),
                                   Text(
-                                    '${(progress * 100).toInt()}%',
-                                    style: const TextStyle(
+                                    isUnlocked
+                                        ? '${(progress * 100).toInt()}%'
+                                        : '0%',
+                                    style: TextStyle(
                                       fontSize: 12,
-                                      color: Colors.grey,
+                                      color: isUnlocked
+                                          ? Colors.grey
+                                          : Colors.grey.shade400,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -185,23 +245,30 @@ class WorldsMapScreen extends StatelessWidget {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: LinearProgressIndicator(
-                                  value: progress,
+                                  value: isUnlocked ? progress : 0.0,
                                   minHeight:
                                       8, // Un poco más gruesa para que resalte
                                   backgroundColor: Colors.grey.shade200,
-                                  color:
-                                      world['color'], // Usa el color temático del mundo
+                                  color: isUnlocked
+                                      ? world['color']
+                                      : Colors
+                                            .grey
+                                            .shade300, // Usa el color temático o gris
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        trailing: const Column(
+                        trailing: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.play_circle_fill,
-                              color: Colors.blueAccent,
+                              isUnlocked
+                                  ? Icons.play_circle_fill
+                                  : Icons.lock_outline,
+                              color: isUnlocked
+                                  ? Colors.blueAccent
+                                  : Colors.grey.shade400,
                               size: 35,
                             ),
                           ],

@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any
 
 # Importamos lo que creamos
-from database import engine, SessionLocal, Base
+from database import engine, SessionLocal
 import models
 
 app = FastAPI()
