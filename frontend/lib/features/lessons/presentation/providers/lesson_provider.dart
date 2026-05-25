@@ -106,18 +106,55 @@ class LessonProvider extends ChangeNotifier {
   List<LessonSlide> get slides => _slides;
   LessonSlide get currentSlide => _slides[_currentIndex];
 
+  // --- NUEVA VARIABLE: MODO REPASO ---
+  bool _isReviewMode = false;
+  bool get isReviewMode => _isReviewMode;
+
+  String? _currentWorldId;
+  int? _currentLevelIndex;
+
+  void startLesson({
+    required String worldId,
+    required int levelIndex,
+    bool isReview = false,
+  }) {
+    _currentWorldId = worldId;
+    _currentLevelIndex = levelIndex;
+    _isReviewMode = isReview;
+    _currentIndex = 0;
+    _setupCurrentSlideState();
+    notifyListeners();
+  }
+
+  // Helper para preparar la vista actual
+  void _setupCurrentSlideState() {
+    if (_isReviewMode && currentSlide.type == SlideType.exercise) {
+      // Si es repaso, auto-resolvemos la pregunta correctamente
+      _hasAnswered = true;
+      _isCorrect = true;
+      _selectedAnswer = currentSlide.correctAnswerIndex;
+    } else {
+      // Estado normal para aprender
+      _hasAnswered = false;
+      _isCorrect = false;
+      _selectedAnswer = null;
+    }
+  }
+
   void selectAnswer(int index) {
-    if (!_hasAnswered) {
+    // Solo puede seleccionar si no ha respondido y NO está en modo repaso
+    if (!_hasAnswered && !_isReviewMode) {
       _selectedAnswer = index;
       notifyListeners();
     }
   }
 
-  // --- LÓGICA PRINCIPAL MODIFICADA (MÁS VISUAL) ---
+  // --- LÓGICA PRINCIPAL MODIFICADA ---
   void nextSlide(BuildContext context, UserProvider userProvider) {
-    if (currentSlide.type == SlideType.exercise) {
+    // 1. EVALUAR EJERCICIOS EN MODO NORMAL (Aprendizaje)
+    if (!_isReviewMode && currentSlide.type == SlideType.exercise) {
       if (!_hasAnswered) {
-        // Comprobar respuesta
+        // A. El usuario acaba de presionar "Comprobar"
         if (_selectedAnswer == currentSlide.correctAnswerIndex) {
           _isCorrect = true;
           userProvider.addCoins(5);
@@ -133,39 +170,48 @@ class LessonProvider extends ChangeNotifier {
         }
         _hasAnswered = true;
         notifyListeners();
-        return; // Detenemos aquí para que vea su corrección
+        return; // Detenemos la ejecución aquí para que vea su corrección en pantalla
       } else {
-        // Ya respondió y vio el resultado
+        // B. El usuario ya vio si acertó o falló y presionó "Continuar" o "Reintentar"
         if (!_isCorrect) {
-          // Se equivocó, reiniciar ejercicio
+          // Si se equivocó, le reiniciamos el ejercicio para que lo intente de nuevo
           _hasAnswered = false;
           _selectedAnswer = null;
           notifyListeners();
-          return;
+          return; // No lo dejamos avanzar hasta que acierte
         }
       }
     }
 
-    // Avanzar de página
+    // 2. AVANZAR A LA SIGUIENTE DIAPOSITIVA (Teoría o Ejercicio acertado/Modo repaso)
     if (_currentIndex < _slides.length - 1) {
       _currentIndex++;
-      _hasAnswered = false;
-      _selectedAnswer = null;
+      _setupCurrentSlideState(); // Preparamos la nueva vista (si es repaso, se auto-responde)
       notifyListeners();
-    } else {
-      // TERMINÓ EL NIVEL COMPLETAMENTE
-      userProvider.addCoins(50);
-      userProvider.addExp(100);
-      _showVictoryDialog(
-        context,
-      ); // Mostramos el trofeo en lugar de sacarlo de golpe
+    }
+    // 3. FINALIZAR EL NIVEL
+    else {
+      if (_isReviewMode) {
+        // Si solo estaba repasando, mostramos un mensaje sutil sin darle más premios
+        _showReviewCompleteDialog(context);
+      } else {
+        // Si es la primera vez que lo supera: ¡Le damos el botín y guardamos su avance!
+        userProvider.addCoins(50);
+        userProvider.addExp(100);
+        userProvider.completeLevel(
+          _currentWorldId!,
+          _currentLevelIndex!,
+        ); // Guardamos en PostgreSQL
+        _showVictoryDialog(context);
+      }
     }
   }
 
   void previousSlide() {
-    if (_currentIndex > 0 && !_hasAnswered) {
+    // En modo repaso siempre puede retroceder. En modo normal, solo si no ha respondido el ejercicio actual.
+    if (_currentIndex > 0 && (_isReviewMode || !_hasAnswered)) {
       _currentIndex--;
-      _selectedAnswer = null;
+      _setupCurrentSlideState();
       notifyListeners();
     }
   }
@@ -175,6 +221,7 @@ class LessonProvider extends ChangeNotifier {
     _selectedAnswer = null;
     _hasAnswered = false;
     _isCorrect = false;
+    _isReviewMode = false;
   }
 
   // ==========================================
@@ -318,6 +365,67 @@ class LessonProvider extends ChangeNotifier {
             ),
           ],
           // Reducimos el padding inferior del popup para que el botón no quede tan "flotando"
+          actionsPadding: const EdgeInsets.only(bottom: 24),
+        );
+      },
+    );
+  }
+
+  void _showReviewCompleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Column(
+            children: [
+              Icon(Icons.menu_book, size: 80, color: Colors.blueAccent),
+              SizedBox(height: 16),
+              Text(
+                '¡Repaso Terminado!',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: const Text(
+            'Has repasado esta lección con éxito. ¡La práctica hace al maestro!',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          actions: [
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // Cierra popup
+                  Navigator.pop(context); // Vuelve al mapa
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 40,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 4,
+                ),
+                child: const Text(
+                  'VOLVER AL MAPA',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
+            ),
+          ],
           actionsPadding: const EdgeInsets.only(bottom: 24),
         );
       },

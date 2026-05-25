@@ -38,6 +38,9 @@ class User(Base):
     # --- NUEVA COLUMNA: Historial de exámenes ---
     exam_history = Column(JSON, default=[])
 
+    # NUEVO: Guardaremos el progreso como un diccionario {"id_del_mundo": niveles_completados}
+    world_progress = Column(JSON, default={})
+
 # --- NUEVA TABLA: Banco de Preguntas ---
 class Question(Base):
     __tablename__ = "questions"

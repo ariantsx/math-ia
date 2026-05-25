@@ -91,9 +91,9 @@ class WorldsMapScreen extends StatelessWidget {
                 final world = worlds[index];
                 final int totalLevels = world['levels'].length;
 
-                // TODO: Más adelante, leeremos esto desde el UserProvider (ej. user.completedLevels[world['id']])
-                // Por ahora, simulamos que el primer mundo tiene 3 niveles completados para que veas el diseño
-                final int completedLevels = index == 0 ? 3 : 0;
+                // AHORA ES REAL: Leemos cuántos niveles ha pasado de ESTE mundo específico
+                final int completedLevels =
+                    userProvider.worldProgress[world['id']] ?? 0;
                 final double progress = completedLevels / totalLevels;
 
                 return Card(

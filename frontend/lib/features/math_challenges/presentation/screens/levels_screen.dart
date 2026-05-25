@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:math_ia/features/lessons/presentation/providers/lesson_provider.dart';
 import 'package:math_ia/features/lessons/presentation/screens/lesson_screen.dart';
 
 class LevelsScreen extends StatelessWidget {
@@ -141,22 +143,24 @@ class LevelsScreen extends StatelessWidget {
                       right: isLeft ? null : 0,
                       child: InkWell(
                         // AQUÍ ESTÁ EL BLOQUEO: Si isLocked es true, onTap es null (botón desactivado)
+                        // Círculo flotante (Piedra del camino)
                         onTap: isLocked
-                            ? null
+                            ? null // Botón desactivado si está bloqueado
                             : () {
+                                // 1. Inicializamos el proveedor (activará isReviewMode si el nivel ya fue completado)
+                                context.read<LessonProvider>().startLesson(
+                                  worldId: worldData['id'],
+                                  levelIndex: index,
+                                  isReview: isCompleted,
+                                );
+
+                                // 2. Navegamos a la lección
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => const LessonScreen(),
                                   ),
                                 );
-                                // ScaffoldMessenger.of(context).showSnackBar(
-                                //   SnackBar(
-                                //     content: Text(
-                                //       'Iniciando: ${levels[index]}',
-                                //     ),
-                                //   ),
-                                // );
                               },
                         child: CircleAvatar(
                           radius: 28,

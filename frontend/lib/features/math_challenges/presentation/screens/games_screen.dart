@@ -135,46 +135,46 @@ class GamesScreen extends StatelessWidget {
     );
   }
 
-  // --- WIDGET REUTILIZABLE PARA LAS TARJETAS DE JUEGO ---
-  Widget _buildGameCard(
-    BuildContext context, {
-    required String title,
-    required IconData icon,
-    required Color color,
-  }) {
-    return InkWell(
-      onTap: () {
-        // Aquí agregarías la navegación hacia el juego seleccionado
-        // Navigator.pop(context); // Cierra el popup primero
-        // Navigator.push(...); // Navega al juego
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Iniciando $title...')));
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: color.withOpacity(0.5), width: 2),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: color),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: color.withOpacity(0.8),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // // --- WIDGET REUTILIZABLE PARA LAS TARJETAS DE JUEGO ---
+  // Widget _buildGameCard(
+  //   BuildContext context, {
+  //   required String title,
+  //   required IconData icon,
+  //   required Color color,
+  // }) {
+  //   return InkWell(
+  //     onTap: () {
+  //       // Aquí agregarías la navegación hacia el juego seleccionado
+  //       // Navigator.pop(context); // Cierra el popup primero
+  //       // Navigator.push(...); // Navega al juego
+  //       ScaffoldMessenger.of(
+  //         context,
+  //       ).showSnackBar(SnackBar(content: Text('Iniciando $title...')));
+  //     },
+  //     child: Container(
+  //       decoration: BoxDecoration(
+  //         color: color.withOpacity(0.1),
+  //         borderRadius: BorderRadius.circular(15),
+  //         border: Border.all(color: color.withOpacity(0.5), width: 2),
+  //       ),
+  //       child: Column(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           Icon(icon, size: 40, color: color),
+  //           const SizedBox(height: 8),
+  //           Text(
+  //             title,
+  //             textAlign: TextAlign.center,
+  //             style: TextStyle(
+  //               fontWeight: FontWeight.bold,
+  //               color: color.withOpacity(0.8),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

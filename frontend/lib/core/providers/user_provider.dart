@@ -30,6 +30,10 @@ class UserProvider extends ChangeNotifier {
   final int _baseExp = 100; // Cuánto cuesta el Nivel 1
   final double _multiplier = 1.5; // Qué tan difícil se vuelve cada nivel
 
+  // NUEVA VARIABLE: Progreso de los mundos
+  Map<String, dynamic> _worldProgress = {};
+  Map<String, dynamic> get worldProgress => _worldProgress;
+
   List<dynamic> _examHistory = [];
 
   // Getters para que la UI lea los datos
@@ -165,6 +169,8 @@ class UserProvider extends ChangeNotifier {
         _inventory = data['inventory'];
         _equipped = data['equipped'];
         _examHistory = data['exam_history'] ?? [];
+        // Leemos el progreso al iniciar sesión
+        _worldProgress = data['world_progress'] ?? {};
 
         notifyListeners(); // Actualiza todas las pantallas
       }
@@ -211,10 +217,23 @@ class UserProvider extends ChangeNotifier {
           'coins': _coins,
           'inventory': _inventory,
           'equipped': _equipped,
+          'world_progress': _worldProgress, // AÑADIMOS EL PROGRESO
         }),
       );
     } catch (e) {
       debugPrint("Error sincronizando: $e");
+    }
+  }
+
+  // --- NUEVA FUNCIÓN PARA PASAR DE NIVEL ---
+  void completeLevel(String worldId, int levelIndexCompleted) {
+    // Solo aumentamos el progreso si es un nivel NUEVO (para evitar que sume al repasar)
+    int currentWorldProgress = _worldProgress[worldId] ?? 0;
+
+    if (levelIndexCompleted >= currentWorldProgress) {
+      _worldProgress[worldId] = levelIndexCompleted + 1;
+      notifyListeners();
+      _syncWithBackend(); // Guardamos silenciosamente
     }
   }
 
