@@ -215,12 +215,12 @@ class _LessonScreenState extends State<LessonScreen> {
 
             // --- NUEVO: Evaluamos si debemos mostrar el botón de ATRÁS ---
             // Se muestra si no estamos en la primera vista Y (estamos en repaso O no ha respondido aún)
+            // --- PANEL INFERIOR DE BOTONES ---
             Builder(
               builder: (context) {
-                final bool showBackButton =
-                    lessonProvider.currentIndex > 0 &&
-                    (lessonProvider.isReviewMode ||
-                        !lessonProvider.hasAnswered);
+                // El botón SIEMPRE se muestra (excepto en la primera vista, que es el índice 0)
+                final bool showBackButton = lessonProvider.currentIndex > 0;
+
                 return Row(
                   children: [
                     if (showBackButton)

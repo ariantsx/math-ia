@@ -133,6 +133,7 @@ class LevelsScreen extends StatelessWidget {
                             ? null
                             : () {
                                 context.read<LessonProvider>().startLesson(
+                                  user, // <-- AÑADIMOS ESTA LÍNEA (la variable user ya la tienes definida arriba en el build)
                                   worldId: worldData['id'],
                                   levelIndex: index,
                                   isReview: isCompleted,

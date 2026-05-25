@@ -57,6 +57,7 @@ class UserUpdateData(BaseModel):
     inventory: dict
     equipped: dict
     world_progress: dict
+    lesson_progress: Dict[str, list] = {} # <-- NUEVO
 
 class ForgotPasswordRequest(BaseModel):
     email: str
@@ -181,7 +182,8 @@ async def get_user_profile(user_id: int, db: Session = Depends(get_db)):
         "equipped": user.equipped,
         "exam_history": user.exam_history,
         "world_progress": user.world_progress,
-        "next_life_in_seconds": seconds_until_next, # <-- DATO CLAVE
+        "next_life_in_seconds": seconds_until_next, 
+        "lesson_progress": user.lesson_progress,
     }
 
 # --- 2. AL ACTUALIZAR ESTADÍSTICAS (PUT /api/users/{user_id}/stats) ---
@@ -199,6 +201,7 @@ async def sync_user_data(user_id: int, data: UserUpdateData, db: Session = Depen
     user.inventory = data.inventory
     user.equipped = data.equipped
     user.world_progress = data.world_progress
+    user.lesson_progress = data.lesson_progress # <-- NUEVO
     
     db.commit()
     return {"success": True, "message": "Datos sincronizados"}

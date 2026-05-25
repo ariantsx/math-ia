@@ -34,6 +34,9 @@ class UserProvider extends ChangeNotifier {
   Map<String, dynamic> _worldProgress = {};
   Map<String, dynamic> get worldProgress => _worldProgress;
 
+  Map<String, dynamic> _lessonProgress = {};
+  Map<String, dynamic> get lessonProgress => _lessonProgress;
+
   List<dynamic> _examHistory = [];
 
   // Getters para que la UI lea los datos
@@ -171,6 +174,7 @@ class UserProvider extends ChangeNotifier {
         _examHistory = data['exam_history'] ?? [];
         // Leemos el progreso al iniciar sesión
         _worldProgress = data['world_progress'] ?? {};
+        _lessonProgress = data['lesson_progress'] ?? {};
 
         // --- NUEVO: Sincronizar el reloj del celular con el reloj del servidor ---
         _secondsUntilNextLife = data['next_life_in_seconds'] ?? 300;
@@ -223,6 +227,7 @@ class UserProvider extends ChangeNotifier {
           'inventory': _inventory,
           'equipped': _equipped,
           'world_progress': _worldProgress, // AÑADIMOS EL PROGRESO
+          'lesson_progress': _lessonProgress,
         }),
       );
     } catch (e) {
@@ -242,6 +247,29 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  // --- NUEVAS FUNCIONES PARA LOS EJERCICIOS ---
+  List<int> getCompletedExercises(String worldId, int levelIndex) {
+    final key = '${worldId}_$levelIndex';
+    final progress = _lessonProgress[key];
+    if (progress == null) return [];
+    return List<int>.from(progress);
+  }
+
+  void markExerciseCompleted(String worldId, int levelIndex, int slideIndex) {
+    final key = '${worldId}_$levelIndex';
+    if (!_lessonProgress.containsKey(key)) {
+      _lessonProgress[key] = [];
+    }
+
+    List<int> completed = List<int>.from(_lessonProgress[key]);
+    if (!completed.contains(slideIndex)) {
+      completed.add(slideIndex);
+      _lessonProgress[key] = completed;
+      notifyListeners();
+      _syncWithBackend(); // Guarda en PostgreSQL silenciosamente
+    }
+  }
+
   // --- LIMPIEZA DE SESIÓN ---
   void clearData() {
     // Reemplaza _userId por el nombre exacto de la variable que uses para el ID
@@ -253,6 +281,7 @@ class UserProvider extends ChangeNotifier {
     _examHistory = [];
     _inventory = {'hats': [], 'glasses': [], 'shirts': []};
     _equipped = {'hats': null, 'glasses': null, 'shirts': null};
+    _lessonProgress = {};
     notifyListeners();
   }
 }

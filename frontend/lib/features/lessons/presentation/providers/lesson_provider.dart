@@ -16,6 +16,9 @@ class LessonProvider extends ChangeNotifier {
   bool _isCorrect = false;
   bool get isCorrect => _isCorrect;
 
+  Set<int> _completedExercises =
+      {}; // Guarda los índices de ejercicios ya resueltos
+
   // --- NUEVO: La lista de diapositivas ahora está vacía al inicio ---
   List<LessonSlide> _slides = [];
   List<LessonSlide> get slides => _slides;
@@ -32,7 +35,9 @@ class LessonProvider extends ChangeNotifier {
   String? _currentWorldId;
   int? _currentLevelIndex;
 
-  void startLesson({
+  // Modificamos startLesson para que reciba al UserProvider
+  void startLesson(
+    UserProvider userProvider, {
     required String worldId,
     required int levelIndex,
     bool isReview = false,
@@ -42,19 +47,22 @@ class LessonProvider extends ChangeNotifier {
     _isReviewMode = isReview;
     _currentIndex = 0;
 
-    // --- NUEVO: Cargador Dinámico de Lecciones ---
     if (worldId == 'w1') {
       _slides = World1Lessons.getLesson(levelIndex);
     } else {
-      // Futuros mundos (w2, w3...)
       _slides = [
         LessonSlide(
           type: SlideType.intro,
           title: 'Próximamente',
-          content: 'Este nivel aún está en construcción.',
+          content: 'Construcción',
         ),
       ];
     }
+
+    // NUEVO: Descargamos el historial de ejercicios de este nivel específico
+    _completedExercises = userProvider
+        .getCompletedExercises(worldId, levelIndex)
+        .toSet();
 
     _setupCurrentSlideState();
     notifyListeners();
@@ -62,13 +70,15 @@ class LessonProvider extends ChangeNotifier {
 
   // Helper para preparar la vista actual
   void _setupCurrentSlideState() {
-    if (_isReviewMode && currentSlide.type == SlideType.exercise) {
-      // Si es repaso, auto-resolvemos la pregunta correctamente
+    // Magia: Es modo repaso O el usuario ya completó este ejercicio antes
+    bool isAlreadyCompleted =
+        _isReviewMode || _completedExercises.contains(_currentIndex);
+
+    if (isAlreadyCompleted && currentSlide.type == SlideType.exercise) {
       _hasAnswered = true;
       _isCorrect = true;
       _selectedAnswer = currentSlide.correctAnswerIndex;
     } else {
-      // Estado normal para aprender
       _hasAnswered = false;
       _isCorrect = false;
       _selectedAnswer = null;
@@ -92,6 +102,15 @@ class LessonProvider extends ChangeNotifier {
         if (_selectedAnswer == currentSlide.correctAnswerIndex) {
           _isCorrect = true;
           userProvider.addCoins(5);
+
+          // NUEVO: Lo marcamos localmente y en la base de datos
+          _completedExercises.add(_currentIndex);
+          userProvider.markExerciseCompleted(
+            _currentWorldId!,
+            _currentLevelIndex!,
+            _currentIndex,
+          );
+
           _showFloatingMessage(
             context,
             '¡Correcto! +5 Monedas 🟡',
@@ -142,8 +161,9 @@ class LessonProvider extends ChangeNotifier {
   }
 
   void previousSlide() {
-    // En modo repaso siempre puede retroceder. En modo normal, solo si no ha respondido el ejercicio actual.
-    if (_currentIndex > 0 && (_isReviewMode || !_hasAnswered)) {
+    // Ya no restringimos el retroceso.
+    // El estudiante tiene total libertad de volver a leer la teoría.
+    if (_currentIndex > 0) {
       _currentIndex--;
       _setupCurrentSlideState();
       notifyListeners();

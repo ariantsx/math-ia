@@ -44,6 +44,9 @@ class User(Base):
     # Guardar el momento exacto en que empezó a regenerar vidas
     last_life_update = Column(DateTime, default=None)
 
+    # Guarda el progreso interno de cada nivel {"w1_0": [2, 4, 5]}
+    lesson_progress = Column(JSON, default={})
+
 # --- NUEVA TABLA: Banco de Preguntas ---
 class Question(Base):
     __tablename__ = "questions"
