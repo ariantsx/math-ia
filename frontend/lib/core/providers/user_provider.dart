@@ -214,7 +214,9 @@ class UserProvider extends ChangeNotifier {
         Uri.parse('$_baseUrl/users/$_userId/sync'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
+          'exp': _exp,
           'coins': _coins,
+          'lives': _lives,
           'inventory': _inventory,
           'equipped': _equipped,
           'world_progress': _worldProgress, // AÑADIMOS EL PROGRESO

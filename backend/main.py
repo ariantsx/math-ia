@@ -1,4 +1,3 @@
-from http.client import HTTPException
 from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -52,7 +51,9 @@ class UserCreate(BaseModel):
     password: str
 
 class UserUpdateData(BaseModel):
+    exp: int
     coins: int
+    lives: int
     inventory: dict
     equipped: dict
     world_progress: dict
@@ -72,13 +73,6 @@ class ExamSaveRequest(BaseModel):
     score: int
     grade: str
     detailed_history: list # Para guardar en qué se equivocó exactamente
-
-# Modelo para recibir la petición de Flutter
-class UserStatsUpdate(BaseModel):
-    exp: int
-    coins: int
-    lives: int
-    world_progress: Dict[str, int] # Recibe el diccionario de mundos
 
 # 2. Creamos la ruta (endpoint) para el login
 @app.post("/api/login")
@@ -169,7 +163,9 @@ async def get_user_profile(user_id: int, db: Session = Depends(get_db)):
 async def sync_user_data(user_id: int, data: UserUpdateData, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == user_id).first()
     
+    user.exp = data.exp
     user.coins = data.coins
+    user.lives = data.lives
     user.inventory = data.inventory
     user.equipped = data.equipped
     user.world_progress = data.world_progress
@@ -360,21 +356,6 @@ async def seed_questions(db: Session = Depends(get_db)):
     db.add_all(preguntas_ejemplo)
     db.commit()
     return {"message": "Banco de preguntas poblado con éxito"}
-
-@app.put("/api/users/{user_id}/stats")
-def update_user_stats(user_id: int, stats: UserStatsUpdate, db: Session = Depends(get_db)):
-    db_user = db.query(models.User).filter(models.User.id == user_id).first()
-    if not db_user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    
-    # Actualizamos los 4 valores
-    db_user.exp = stats.exp
-    db_user.coins = stats.coins
-    db_user.lives = stats.lives
-    db_user.world_progress = stats.world_progress
-    
-    db.commit()
-    return {"message": "Estadísticas y progreso actualizados correctamente"}
 
 # Este bloque es para poder ejecutar el archivo directamente
 if __name__ == "__main__":
