@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:math_ia/core/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:math_ia/features/lessons/presentation/providers/lesson_provider.dart';
 import 'package:math_ia/features/lessons/presentation/screens/lesson_screen.dart';
 
 class LevelsScreen extends StatelessWidget {
   final Map<String, dynamic> worldData;
-  final int completedLevels; // <-- Recibimos el progreso del usuario
 
-  const LevelsScreen({
-    super.key,
-    required this.worldData,
-    required this.completedLevels,
-  });
+  const LevelsScreen({super.key, required this.worldData});
 
   @override
   Widget build(BuildContext context) {
     final List<String> levels = worldData['levels'];
     final Color worldColor = worldData['color'];
+
+    // --- AQUÍ ESTÁ EL TRUCO REACTIVO ---
+    // Al usar watch, esta pantalla se redibujará INSTANTÁNEAMENTE
+    // cuando el usuario termine la lección y se actualice el proveedor.
+    final user = context.watch<UserProvider>();
+    final int completedLevels = user.worldProgress[worldData['id']] ?? 0;
 
     return Scaffold(
       backgroundColor: Colors.white,
