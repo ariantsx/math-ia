@@ -213,65 +213,74 @@ class _LessonScreenState extends State<LessonScreen> {
               ),
             ),
 
-            // PANEL INFERIOR DE BOTONES
-            Row(
-              children: [
-                if (lessonProvider.currentIndex > 0 &&
-                    !lessonProvider.hasAnswered)
-                  Expanded(
-                    flex: 1,
-                    child: OutlinedButton(
-                      onPressed: () => lessonProvider.previousSlide(),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+            // --- NUEVO: Evaluamos si debemos mostrar el botón de ATRÁS ---
+            // Se muestra si no estamos en la primera vista Y (estamos en repaso O no ha respondido aún)
+            Builder(
+              builder: (context) {
+                final bool showBackButton =
+                    lessonProvider.currentIndex > 0 &&
+                    (lessonProvider.isReviewMode ||
+                        !lessonProvider.hasAnswered);
+                return Row(
+                  children: [
+                    if (showBackButton)
+                      Expanded(
+                        flex: 1,
+                        child: OutlinedButton(
+                          onPressed: () => lessonProvider.previousSlide(),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          child: const Text('ATRÁS'),
                         ),
                       ),
-                      child: const Text('ATRÁS'),
-                    ),
-                  ),
-                if (lessonProvider.currentIndex > 0 &&
-                    !lessonProvider.hasAnswered)
-                  const SizedBox(width: 12),
+                    if (showBackButton) const SizedBox(width: 12),
 
-                // BOTÓN PRINCIPAL
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
-                    onPressed:
-                        (slide.type == SlideType.exercise &&
-                            lessonProvider.selectedAnswer == null)
-                        ? null
-                        : () => lessonProvider.nextSlide(context, userProvider),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: lessonProvider.hasAnswered
-                          ? (lessonProvider.isCorrect
-                                ? Colors.green
-                                : Colors.red)
-                          : Colors.blueAccent,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
+                    // BOTÓN PRINCIPAL (Continuar / Comprobar / Reintentar)
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed:
+                            (slide.type == SlideType.exercise &&
+                                lessonProvider.selectedAnswer == null)
+                            ? null
+                            : () => lessonProvider.nextSlide(
+                                context,
+                                userProvider,
+                              ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: lessonProvider.hasAnswered
+                              ? (lessonProvider.isCorrect
+                                    ? Colors.green
+                                    : Colors.red)
+                              : Colors.blueAccent,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        child: Text(
+                          lessonProvider.hasAnswered
+                              ? (lessonProvider.isCorrect
+                                    ? 'CONTINUAR'
+                                    : 'REINTENTAR')
+                              : (slide.type == SlideType.exercise
+                                    ? 'COMPROBAR'
+                                    : 'ENTENDIDO'),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                    child: Text(
-                      lessonProvider.hasAnswered
-                          ? (lessonProvider.isCorrect
-                                ? 'CONTINUAR'
-                                : 'REINTENTAR')
-                          : (slide.type == SlideType.exercise
-                                ? 'COMPROBAR'
-                                : 'ENTENDIDO'),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                  ],
+                );
+              },
             ),
           ],
         ),
