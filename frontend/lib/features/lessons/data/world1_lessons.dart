@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import 'lesson_models.dart';
 
 class World1Lessons {
@@ -31,18 +33,21 @@ class World1Lessons {
       title: 'Números Naturales (N)',
       content:
           '¡Bienvenido al Reino Numérico!\n\nImagina que eres un pastor de ovejas hace miles de años. Necesitas saber si todas tus ovejas regresaron a casa. ¿Cómo lo haces? ¡Contando! Así nacieron los números más antiguos de la historia: Los Números Naturales.',
+      lottieUrl: 'assets/lottie/castillo.json',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: '¿Cuáles son y para qué sirven?',
       content:
           'Se representan con la letra "N" y empiezan desde el 1 hacia el infinito: {1, 2, 3, 4, 5...}.\n\nTienen dos usos principales en la vida real:\n1. Cardinales: Para contar cantidades (Ej: Tengo 3 manzanas, tengo 15 años).\n2. Ordinales: Para establecer un orden (Ej: Llegué en 1er lugar, vivo en el 4to piso).',
+      icon: Icons.format_list_numbered, // <-- ÍCONO DE NÚMEROS
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'El misterio del Cero',
       content:
           '¿El Cero (0) es un número natural?\n\nDepende a quién le preguntes. Muchos matemáticos no lo incluyen porque en la naturaleza no señalas algo diciendo "mira, ahí hay cero árboles". Por convención, para contar, empezamos siempre desde el 1.',
+      lottieUrl: 'assets/lottie/question.json',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -128,18 +133,21 @@ class World1Lessons {
       title: 'Números Enteros (Z)',
       content:
           '¡Las cosas se enfrían!\n\nCon el tiempo, la humanidad descubrió que los números naturales no eran suficientes. ¿Cómo representas una deuda de \$5 en el banco? ¿O una temperatura de 10 grados bajo cero? Aquí nacen los Números Enteros.',
+      lottieUrl: 'assets/lottie/nieve.json',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'El Espejo Matemático',
       content:
           'Los Números Enteros se representan con la letra "Z". Este conjunto incluye a todos los Naturales (los positivos), incluye al CERO (0) como punto de equilibrio, y añade un "reflejo negativo" para cada número: -1, -2, -3...\n\n- Ganar dinero o subir pisos es positivo (+).\n- Perder dinero o bajar a sótanos son negativos (-).',
+      icon: Icons.elevator, // <-- ÍCONO DE ASCENSOR
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'La Recta Numérica',
       content:
           'Imagina una línea horizontal.\n\nEn el centro exacto está el 0. Hacia la DERECHA avanzan los positivos (1, 2, 3...). Hacia la IZQUIERDA avanzan los negativos (-1, -2, -3...).\n\nRegla de oro: Cualquier número que esté MÁS a la derecha en la recta, siempre será MAYOR.',
+      imagePath: 'assets/images/numeros_enteros.jpg',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -216,12 +224,14 @@ class World1Lessons {
       title: 'Racionales (Q)',
       content:
           '¡Hora de la pizza!\n\n¿Qué pasa si compartes una pizza con tus amigos? Ya no tienes "1 pizza entera", tienes porciones. Aquí entran los Números Racionales, que sirven para representar fragmentos o pedazos de cosas enteras.',
+      lottieUrl: 'assets/lottie/pizza.json',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Fracciones y Decimales',
       content:
           'Un número Racional (Q) es CUALQUIER número que se pueda escribir como una fracción matemática (a/b), donde el número de abajo (el denominador "b") NUNCA puede ser cero.\n\nEjemplos de Racionales:\n- Una fracción: 1/2, 3/4.\n- Un decimal exacto: 0.5 (que es lo mismo que 1/2).',
+      icon: Icons.pie_chart, // <-- ÍCONO DE GRÁFICO CIRCULAR (Fracciones)
     ),
     LessonSlide(
       type: SlideType.teaching,

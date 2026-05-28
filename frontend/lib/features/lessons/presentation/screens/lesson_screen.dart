@@ -3,6 +3,7 @@ import 'package:math_ia/core/providers/user_provider.dart';
 import 'package:math_ia/features/lessons/data/lesson_models.dart';
 import 'package:math_ia/features/lessons/presentation/providers/lesson_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:lottie/lottie.dart'; // <-- AÑADIR ESTA LÍNEA
 
 class LessonScreen extends StatefulWidget {
   const LessonScreen({super.key});
@@ -121,6 +122,66 @@ class _LessonScreenState extends State<LessonScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
+
+                    // RENDERIZADO VISUAL (Lottie, Imágenes o Íconos)
+                    // ==========================================
+                    if (slide.lottieUrl != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24.0),
+                        child: Center(
+                          child: Lottie.asset(
+                            slide.lottieUrl!,
+                            height: 180, // Tamaño ideal para no tapar el texto
+                            fit: BoxFit.contain,
+                            // Mientras carga de internet, mostramos un circulito de carga
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(
+                                  Icons.error,
+                                  color: Colors.red,
+                                  size: 50,
+                                ),
+                            frameBuilder: (context, child, composition) {
+                              if (composition == null)
+                                return const CircularProgressIndicator();
+                              return child;
+                            },
+                          ),
+                        ),
+                      )
+                    else if (slide.imagePath != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24.0),
+                        child: Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.asset(
+                              slide.imagePath!,
+                              height:
+                                  180, // Altura ideal para no tapar el texto
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      )
+                    else if (slide.icon != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24.0),
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              slide.icon,
+                              size: 100,
+                              color: Colors.blueAccent,
+                            ),
+                          ),
+                        ),
+                      ),
+                    // ==========================================
 
                     // CONTENIDO / ENUNCIADO
                     Text(
