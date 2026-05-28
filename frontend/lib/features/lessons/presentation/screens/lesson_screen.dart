@@ -208,6 +208,77 @@ class _LessonScreenState extends State<LessonScreen> {
                           ),
                         );
                       }),
+                    // ... (Tu código actual donde se dibujan las opciones) ...
+
+                    // --- NUEVO: CAJA DE FEEDBACK ---
+                    if (slide.type == SlideType.exercise &&
+                        lessonProvider.hasAnswered &&
+                        slide.feedback != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 24.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: lessonProvider.isCorrect
+                                ? Colors.green.shade50
+                                : Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                              color: lessonProvider.isCorrect
+                                  ? Colors.green.shade300
+                                  : Colors.red.shade300,
+                              width: 2,
+                            ),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                lessonProvider.isCorrect
+                                    ? Icons.lightbulb
+                                    : Icons.info_outline,
+                                color: lessonProvider.isCorrect
+                                    ? Colors.green.shade700
+                                    : Colors.red.shade700,
+                                size: 28,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      lessonProvider.isCorrect
+                                          ? '¡Buen trabajo!'
+                                          : 'Revisemos esto...',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: lessonProvider.isCorrect
+                                            ? Colors.green.shade800
+                                            : Colors.red.shade800,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      slide.feedback!,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.black87,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                    // --- LA SOLUCIÓN: Usar SizedBox en lugar de Spacer() ---
+                    const SizedBox(height: 32),
+                    // ... (Tu código actual del panel inferior de botones: ATRÁS, CONTINUAR) ...
                   ],
                 ),
               ),

@@ -9,11 +9,14 @@ class LessonSlide {
   final List<String>? options;
   final int? correctAnswerIndex;
 
+  final String? feedback;
+
   LessonSlide({
     required this.type,
     required this.title,
     required this.content,
     this.options,
     this.correctAnswerIndex,
+    this.feedback,
   });
 }
