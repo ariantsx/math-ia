@@ -9,7 +9,8 @@ from security import get_password_hash, verify_password
 from pydantic import BaseModel
 import random
 from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Dict, Any, List
+from fastapi import HTTPException # <-- Asegúrate de importar HTTPException en la parte superior
 
 # Importamos lo que creamos
 from database import engine, SessionLocal
@@ -74,6 +75,13 @@ class ExamSaveRequest(BaseModel):
     score: int
     grade: str
     detailed_history: list # Para guardar en qué se equivocó exactamente
+
+class NextExerciseRequest(BaseModel):
+    world_id: str
+    level_index: int
+    current_skill_level: int
+    exclude_ids: List[int] = [] # Memoria temporal de la sesión
+    target_concept: str = None # <-- NUEVO: El tema exacto que queremos
 
 # 2. Creamos la ruta (endpoint) para el login
 @app.post("/api/login")
@@ -389,6 +397,75 @@ async def seed_questions(db: Session = Depends(get_db)):
     db.add_all(preguntas_ejemplo)
     db.commit()
     return {"message": "Banco de preguntas poblado con éxito"}
+
+# --- SISTEMA DE APRENDIZAJE POR REFUERZO (IA) ---
+@app.post("/api/exercises/next")
+async def get_next_dynamic_exercise(req: NextExerciseRequest, db: Session = Depends(get_db)):
+    
+    # 1. PARÁMETROS DEL ALGORITMO EPSILON-GREEDY
+    epsilon = 0.20  # 20% de probabilidad de "Explorar"
+    target_difficulty = req.current_skill_level
+    is_epic_quest = False
+
+    # 2. DECISIÓN DE LA IA: ¿Explotar o Explorar?
+    if random.random() < epsilon:
+        # FASE DE EXPLORACIÓN: Lanzamos un reto ligeramente superior a su nivel
+        target_difficulty = min(10, target_difficulty + random.randint(1, 2))
+        is_epic_quest = True
+    else:
+        # FASE DE EXPLOTACIÓN: Mantenemos su nivel para reforzar confianza
+        pass 
+
+    # 3. CONSTRUCCIÓN DE LA BÚSQUEDA EN BASE DE DATOS
+    query = db.query(models.Exercise).filter(
+        models.Exercise.world_id == req.world_id,
+        models.Exercise.level_index == req.level_index
+    )
+
+    # <-- NUEVO FILTRO EXACTO -->
+    if req.target_concept:
+        query = query.filter(models.Exercise.concept_tag == req.target_concept)
+
+    # 4. FILTRO DE MEMORIA: Excluimos lo que ya resolvió en esta sesión
+    if req.exclude_ids and len(req.exclude_ids) > 0:
+        query = query.filter(models.Exercise.id.notin_(req.exclude_ids))
+
+    # Buscamos los que encajen con la dificultad decidida por la IA
+    exercises = query.filter(models.Exercise.base_difficulty == target_difficulty).all()
+
+    # --- SISTEMA DE RESPALDO (FALLBACKS) ---
+    
+    # Plan B: Si no hay ejercicios exactos de esa dificultad, traemos cualquiera que NO haya visto
+    if not exercises:
+        exercises = query.all()
+        is_epic_quest = False # Apagamos el aviso de "Reto" porque la dificultad ya no es exacta
+
+    # Plan C: Si ya resolvió TODOS los del nivel, ignoramos la memoria y le repetimos uno
+    if not exercises:
+        exercises = db.query(models.Exercise).filter(
+            models.Exercise.world_id == req.world_id,
+            models.Exercise.level_index == req.level_index
+        ).all()
+
+    # ESCUDO ANTI-CRASH: Si la tabla está literalmente vacía para este nivel
+    if not exercises:
+        raise HTTPException(status_code=404, detail="No hay ejercicios registrados para este nivel.")
+
+    # 5. SELECCIÓN FINAL Y RESPUESTA
+    chosen = random.choice(exercises)
+
+    return {
+        "is_epic_quest": is_epic_quest,
+        "exercise": {
+            "id": chosen.id,
+            "question_text": chosen.question_text,
+            "options": chosen.options,
+            "correct_answer_index": chosen.correct_answer_index,
+            "feedback": chosen.feedback,
+            "difficulty": chosen.base_difficulty,
+            "concept_tag": chosen.concept_tag
+        }
+    }
 
 # Este bloque es para poder ejecutar el archivo directamente
 if __name__ == "__main__":

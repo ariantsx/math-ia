@@ -55,3 +55,24 @@ class Question(Base):
     text = Column(String)
     options = Column(JSON) # Guardaremos la lista de 4 opciones aquí
     correct_answer_index = Column(Integer)
+
+# --- Añade esto al final de tu models.py ---
+
+class Exercise(Base):
+    __tablename__ = "exercises"
+
+    id = Column(Integer, primary_key=True, index=True)
+    
+    # --- Metadatos de Ubicación ---
+    world_id = Column(String, index=True)       # Ej: "w1"
+    level_index = Column(Integer, index=True)   # Ej: 0, 1, 2...
+    
+    # --- Metadatos para la IA ---
+    base_difficulty = Column(Integer, index=True) # Del 1 (Fácil) al 10 (Difícil)
+    concept_tag = Column(String)                  # Ej: "suma_negativos"
+    
+    # --- Contenido ---
+    question_text = Column(String)
+    options = Column(JSON)                        # Ej: ["1", "2", "3", "4"]
+    correct_answer_index = Column(Integer)
+    feedback = Column(String)                     # Retroalimentación pedagógica

@@ -14,6 +14,7 @@ class LessonSlide {
   final String? imagePath;
   final IconData? icon;
   final String? lottieUrl; // <-- NUEVO: Para animaciones Lottie
+  final String? conceptTag; // <-- NUEVO: Etiqueta del tema
 
   LessonSlide({
     required this.type,
@@ -25,5 +26,6 @@ class LessonSlide {
     this.imagePath,
     this.icon,
     this.lottieUrl, // <-- Lo añadimos al constructor
+    this.conceptTag, // <-- NUEVO
   });
 }

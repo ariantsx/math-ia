@@ -37,6 +37,10 @@ class UserProvider extends ChangeNotifier {
   Map<String, dynamic> _lessonProgress = {};
   Map<String, dynamic> get lessonProgress => _lessonProgress;
 
+  // --- NUEVO: Memoria de ejercicios de IA (Modo Repaso) ---
+  Map<String, dynamic> _savedDynamicExercises = {};
+  Map<String, dynamic> get savedDynamicExercises => _savedDynamicExercises;
+
   List<dynamic> _examHistory = [];
 
   // Getters para que la UI lea los datos
@@ -255,7 +259,12 @@ class UserProvider extends ChangeNotifier {
     return List<int>.from(progress);
   }
 
-  void markExerciseCompleted(String worldId, int levelIndex, int slideIndex) {
+  void markExerciseCompleted(
+    String worldId,
+    int levelIndex,
+    int slideIndex, {
+    Map<String, dynamic>? dynamicExerciseData,
+  }) {
     final key = '${worldId}_$levelIndex';
     if (!_lessonProgress.containsKey(key)) {
       _lessonProgress[key] = [];
@@ -265,9 +274,26 @@ class UserProvider extends ChangeNotifier {
     if (!completed.contains(slideIndex)) {
       completed.add(slideIndex);
       _lessonProgress[key] = completed;
+
+      // NUEVO: Guardar la "foto" del ejercicio de la IA
+      if (dynamicExerciseData != null) {
+        final exerciseKey = '${worldId}_${levelIndex}_$slideIndex';
+        _savedDynamicExercises[exerciseKey] = dynamicExerciseData;
+      }
+
       notifyListeners();
       _syncWithBackend(); // Guarda en PostgreSQL silenciosamente
     }
+  }
+
+  // --- NUEVO: Recuperar ejercicio para el Repaso ---
+  Map<String, dynamic>? getSavedDynamicExercise(
+    String worldId,
+    int levelIndex,
+    int slideIndex,
+  ) {
+    final exerciseKey = '${worldId}_${levelIndex}_$slideIndex';
+    return _savedDynamicExercises[exerciseKey];
   }
 
   // --- LIMPIEZA DE SESIÓN ---
@@ -282,6 +308,7 @@ class UserProvider extends ChangeNotifier {
     _inventory = {'hats': [], 'glasses': [], 'shirts': []};
     _equipped = {'hats': null, 'glasses': null, 'shirts': null};
     _lessonProgress = {};
+    _savedDynamicExercises.clear();
     notifyListeners();
   }
 }
