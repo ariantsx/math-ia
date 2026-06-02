@@ -298,17 +298,21 @@ class UserProvider extends ChangeNotifier {
 
   // --- LIMPIEZA DE SESIÓN ---
   void clearData() {
-    // Reemplaza _userId por el nombre exacto de la variable que uses para el ID
     _userId = 0;
-    _name = '';
+    _name = "";
+    _email = '';
+    _secondsUntilNextLife = 300;
     _exp = 0;
-    _coins = 500;
+    _coins = 0;
     _lives = 5;
-    _examHistory = [];
-    _inventory = {'hats': [], 'glasses': [], 'shirts': []};
-    _equipped = {'hats': null, 'glasses': null, 'shirts': null};
+
+    _inventory = {};
+    _equipped = {};
+    _worldProgress = {};
     _lessonProgress = {};
-    _savedDynamicExercises.clear();
+    _savedDynamicExercises = {};
+    _examHistory = [];
+
     notifyListeners();
   }
 }

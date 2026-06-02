@@ -537,4 +537,30 @@ class LessonProvider extends ChangeNotifier {
       },
     );
   }
+
+  // --- LIMPIEZA DE SESIÓN ---
+  void clearData() {
+    _userProvider = null;
+    _currentIndex = 0;
+    _selectedAnswer = null;
+    _hasAnswered = false;
+    _isCorrect = false;
+
+    _completedExercises.clear();
+    _slides = [];
+
+    _isLoading = false;
+    _isEpicQuest = false;
+    _dynamicExercise = null;
+
+    _seenExerciseIds.clear();
+    _sessionDynamicExercises.clear();
+    _sessionEpicQuests.clear();
+
+    _isReviewMode = false;
+    _currentWorldId = null;
+    _currentLevelIndex = null;
+
+    notifyListeners();
+  }
 }

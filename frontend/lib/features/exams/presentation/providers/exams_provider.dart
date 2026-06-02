@@ -201,10 +201,14 @@ class ExamsProvider extends ChangeNotifier {
 
   // --- LIMPIEZA DE SESIÓN ---
   void clearData() {
-    lastResult = null;
+    _timer?.cancel();
+    _currentState = ExamState.intro;
     _currentQuestions = [];
     _currentQuestionIndex = 0;
-    _currentState = ExamState.intro;
+    _timeLeft = 30;
+    lastResult = null;
+    _isLoading = false;
+
     notifyListeners();
   }
 }

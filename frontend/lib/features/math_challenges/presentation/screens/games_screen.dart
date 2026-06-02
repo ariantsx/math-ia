@@ -3,6 +3,7 @@ import 'package:math_ia/core/providers/user_provider.dart';
 import 'package:math_ia/features/auth/presentation/screens/login_screen.dart';
 import 'package:math_ia/features/exams/presentation/providers/exams_provider.dart';
 import 'package:math_ia/features/friends/presentation/providers/friends_provider.dart';
+import 'package:math_ia/features/lessons/presentation/providers/lesson_provider.dart';
 import 'package:math_ia/features/math_challenges/presentation/screens/worlds_map_screen.dart';
 import 'package:math_ia/features/profile/presentation/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,7 @@ class GamesScreen extends StatelessWidget {
     context.read<UserProvider>().clearData();
     context.read<ExamsProvider>().clearData();
     context.read<FriendsProvider>().clearData();
+    context.read<LessonProvider>().clearData();
 
     // 2. Aquí, más adelante, puedes borrar el Token (JWT) guardado en el dispositivo.
 

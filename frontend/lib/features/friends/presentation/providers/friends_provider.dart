@@ -82,7 +82,9 @@ class FriendsProvider extends ChangeNotifier {
 
   // --- LIMPIEZA DE SESIÓN ---
   void clearData() {
+    _isLoading = false;
     _leaderboard = [];
+
     notifyListeners();
   }
 }
