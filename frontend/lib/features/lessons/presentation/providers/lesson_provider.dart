@@ -4,6 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:math_ia/core/providers/user_provider.dart';
 import 'package:math_ia/features/lessons/data/lesson_models.dart';
 import 'package:math_ia/features/lessons/data/world1_lessons.dart';
+import 'package:math_ia/features/lessons/data/world2_lessons.dart';
+import 'package:math_ia/features/lessons/data/world3_lessons.dart';
+import 'package:math_ia/features/lessons/data/world4_lessons.dart';
+import 'package:math_ia/features/lessons/data/world5_lessons.dart';
+import 'package:math_ia/features/lessons/data/world6_lessons.dart';
 
 class LessonProvider extends ChangeNotifier {
   UserProvider? _userProvider;
@@ -84,8 +89,19 @@ class LessonProvider extends ChangeNotifier {
     _sessionDynamicExercises.clear();
     _sessionEpicQuests.clear();
 
+    // Dentro de tu función startLesson:
     if (worldId == 'w1') {
       _slides = World1Lessons.getLesson(levelIndex);
+    } else if (worldId == 'w2') {
+      _slides = World2Lessons.getLesson(levelIndex);
+    } else if (worldId == 'w3') {
+      _slides = World3Lessons.getLesson(levelIndex);
+    } else if (worldId == 'w4') {
+      _slides = World4Lessons.getLesson(levelIndex);
+    } else if (worldId == 'w5') {
+      _slides = World5Lessons.getLesson(levelIndex);
+    } else if (worldId == 'w6') {
+      _slides = World6Lessons.getLesson(levelIndex); // <-- NUEVO MUNDO 6
     } else {
       _slides = [
         LessonSlide(
@@ -326,20 +342,6 @@ class LessonProvider extends ChangeNotifier {
       _setupCurrentSlideState();
       notifyListeners();
     }
-  }
-
-  void clear() {
-    _currentIndex = 0;
-    _selectedAnswer = null;
-    _hasAnswered = false;
-    _isCorrect = false;
-    _isReviewMode = false;
-    _dynamicExercise = null;
-    _isEpicQuest = false;
-    _isLoading = false;
-    _seenExerciseIds.clear();
-    _sessionDynamicExercises.clear();
-    _sessionEpicQuests.clear();
   }
 
   // ==========================================

@@ -16,7 +16,7 @@ class _LessonScreenState extends State<LessonScreen> {
   @override
   void dispose() {
     // Usamos microtask para limpiar el provider cuando se cierra la pantalla
-    Future.microtask(() => context.read<LessonProvider>().clear());
+    Future.microtask(() => context.read<LessonProvider>().clearData());
     super.dispose();
   }
 
