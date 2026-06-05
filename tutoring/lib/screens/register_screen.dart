@@ -48,16 +48,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     // 3. Manejar el resultado
     if (errorMessage == null) {
-      // Éxito: Mostrar mensaje y regresar al Login
+      // Éxito: Mostrar mensaje de bienvenida
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            '¡Cuenta de tutor creada con éxito! Ahora puedes iniciar sesión.',
+            '¡Cuenta creada! Bienvenido a la supervisión de MathIA.',
           ),
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pop(context); // Vuelve a la pantalla anterior (Login)
+
+      // CAMBIO AQUÍ: En lugar de Navigator.pop, vamos directo al panel
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/dashboard',
+        (route) => false,
+      );
     } else {
       // Error: Mostrar el mensaje que devolvió Python
       _showError(errorMessage);

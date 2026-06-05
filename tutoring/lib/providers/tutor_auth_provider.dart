@@ -49,7 +49,13 @@ class TutorAuthProvider with ChangeNotifier {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // Registro exitoso. Opcional: Podrías hacer login automático aquí.
+        // --- NUEVO: AUTO-LOGIN INMEDIATO ---
+        // Guardamos las credenciales en la sesión activa
+        _tutorId = data['id'];
+        _tutorName = data['name'];
+        notifyListeners();
+        // -----------------------------------
+
         return null; // Null indica que no hubo errores
       } else {
         return data['detail'] ?? 'Error al registrar tutor';

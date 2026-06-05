@@ -639,7 +639,12 @@ def register_tutor(req: TutorRegisterRequest, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_tutor)
     
-    return {"status": "success", "id": new_tutor.id, "name": new_tutor.name}
+    return {
+        "status": "success", 
+        "id": new_tutor.id, 
+        "name": new_tutor.name,
+        "email": new_tutor.email
+    }
 
 
 @app.post("/api/tutor/login")
