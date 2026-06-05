@@ -97,6 +97,17 @@ class LinkStudentRequest(BaseModel):
     tutor_id: int
     code: str
 
+# Schema para registrar un nuevo tutor
+class TutorRegisterRequest(BaseModel):
+    name: str
+    email: str
+    password: str
+
+# Schema para el login del tutor
+class TutorLoginRequest(BaseModel):
+    email: str
+    password: str
+
 # 2. Creamos la ruta (endpoint) para el login
 @app.post("/api/login")
 async def login(user_data: LoginData, db: Session = Depends(get_db)):
@@ -592,6 +603,49 @@ def get_tutor_dashboard(tutor_id: int, db: Session = Depends(get_db)):
         })
         
     return {"status": "success", "tutor_name": tutor.name, "students": students_data}
+
+@app.post("/api/tutor/register")
+def register_tutor(req: TutorRegisterRequest, db: Session = Depends(get_db)):
+    # 1. Verificar si el correo ya está registrado
+    existing_tutor = db.query(models.Tutor).filter(models.Tutor.email == req.email).first()
+    if existing_tutor:
+        raise HTTPException(status_code=400, detail="Este correo ya está registrado como tutor")
+    
+    # 2. Encriptar la contraseña usando tu función existente en security.py
+    hashed_password = get_password_hash(req.password)
+    
+    # 3. Crear el nuevo tutor con la contraseña encriptada
+    new_tutor = models.Tutor(
+        name=req.name,
+        email=req.email,
+        password=hashed_password  # <-- ¡Seguridad aplicada!
+    )
+    db.add(new_tutor)
+    db.commit()
+    db.refresh(new_tutor)
+    
+    return {"status": "success", "id": new_tutor.id, "name": new_tutor.name}
+
+
+@app.post("/api/tutor/login")
+def login_tutor(req: TutorLoginRequest, db: Session = Depends(get_db)):
+    # 1. Buscar al tutor en la base de datos por su correo
+    tutor = db.query(models.Tutor).filter(models.Tutor.email == req.email).first()
+    
+    # 2. Validar que exista y usar verify_password para comparar el texto plano con el Hash
+    if not tutor or not verify_password(req.password, tutor.password):
+        raise HTTPException(
+            status_code=401,
+            detail="Correo o contraseña incorrectos"
+        )
+        
+    # 3. Retornar los datos para la sesión web
+    return {
+        "status": "success",
+        "id": tutor.id,
+        "name": tutor.name,
+        "email": tutor.email
+    }
 
 # Este bloque es para poder ejecutar el archivo directamente
 if __name__ == "__main__":
