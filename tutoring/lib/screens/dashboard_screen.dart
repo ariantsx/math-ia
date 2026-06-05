@@ -128,6 +128,76 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  void _showUnlinkConfirmation(
+    BuildContext context,
+    int tutorId,
+    int studentId,
+    String studentName,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+              SizedBox(width: 10),
+              Text('¿Desvincular estudiante?'),
+            ],
+          ),
+          content: Text(
+            '¿Estás seguro de que deseas dejar de supervisar a $studentName? El estudiante no perderá sus datos, pero ya no aparecerá en tu panel.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+              ),
+              onPressed: () async {
+                final dataProvider = Provider.of<TutorDataProvider>(
+                  context,
+                  listen: false,
+                );
+                String? error = await dataProvider.unlinkStudent(
+                  tutorId,
+                  studentId,
+                );
+
+                Navigator.pop(context); // Cerrar cuadro de diálogo
+
+                if (error == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Se desvinculó a $studentName correctamente.',
+                      ),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(error), backgroundColor: Colors.red),
+                  );
+                }
+              },
+              child: const Text(
+                'Sí, Desvincular',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<TutorAuthProvider>(context);
@@ -189,7 +259,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent:
               400, // Hace que las tarjetas se adapten al tamaño del monitor
-          childAspectRatio: 1.4,
+          childAspectRatio: 1.2,
           crossAxisSpacing: 20,
           mainAxisSpacing: 20,
         ),
@@ -206,42 +276,68 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // --- CABECERA ACTUALIZADA CON BOTÓN DE ELIMINAR ---
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.blue.shade100,
-                        child: const Icon(Icons.person, color: Colors.blue),
-                      ),
-                      const SizedBox(width: 12),
+                      // Bloque de información (Avatar + Nombre + Correo)
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Text(
-                              student['name'],
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                            CircleAvatar(
+                              radius: 24,
+                              backgroundColor: Colors.blue.shade100,
+                              child: const Icon(
+                                Icons.person,
+                                color: Colors.blue,
                               ),
-                              overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(height: 4), // Separación pequeña
-                            // <-- NUEVO: EL CORREO DEBAJO DEL NOMBRE
-                            Text(
-                              student['email'],
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black54,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    student['name'],
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    student['email'],
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black54,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
                               ),
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
                       ),
+
+                      // NUEVO: BOTÓN DE DESVINCULACIÓN CON CONFIRMACIÓN
+                      IconButton(
+                        icon: const Icon(
+                          Icons.person_remove_alt_1,
+                          color: Colors.redAccent,
+                        ),
+                        tooltip: 'Desvincular Estudiante',
+                        onPressed: () => _showUnlinkConfirmation(
+                          context,
+                          tutorId,
+                          student['id'],
+                          student['name'],
+                        ),
+                      ),
                     ],
                   ),
-
-                  // ... dentro de la tarjeta (Card), reemplaza las estadísticas con esto:
                   const Divider(height: 30),
 
                   // Nivel de la Inteligencia Artificial

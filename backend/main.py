@@ -97,16 +97,18 @@ class LinkStudentRequest(BaseModel):
     tutor_id: int
     code: str
 
-# Schema para registrar un nuevo tutor
 class TutorRegisterRequest(BaseModel):
     name: str
     email: str
     password: str
 
-# Schema para el login del tutor
 class TutorLoginRequest(BaseModel):
     email: str
     password: str
+
+class UnlinkStudentRequest(BaseModel):
+    tutor_id: int
+    student_id: int
 
 # 2. Creamos la ruta (endpoint) para el login
 @app.post("/api/login")
@@ -666,6 +668,24 @@ def login_tutor(req: TutorLoginRequest, db: Session = Depends(get_db)):
         "name": tutor.name,
         "email": tutor.email
     }
+
+@app.post("/api/tutor/unlink-student")
+def unlink_student_from_tutor(req: UnlinkStudentRequest, db: Session = Depends(get_db)):
+    # 1. Buscar al tutor
+    tutor = db.query(models.Tutor).filter(models.Tutor.id == req.tutor_id).first()
+    if not tutor:
+        raise HTTPException(status_code=404, detail="Tutor no encontrado")
+        
+    # 2. Buscar al estudiante dentro de la lista de alumnos del tutor
+    student = next((s for s in tutor.students if s.id == req.student_id), None)
+    if not student:
+        raise HTTPException(status_code=404, detail="El estudiante no está vinculado a este tutor")
+        
+    # 3. Remover al estudiante de la relación (SQLAlchemy se encarga de borrar la fila en 'tutor_student')
+    tutor.students.remove(student)
+    db.commit()
+    
+    return {"status": "success", "message": f"Estudiante {student.name} desvinculado correctamente"}
 
 # Este bloque es para poder ejecutar el archivo directamente
 if __name__ == "__main__":

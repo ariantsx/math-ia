@@ -56,4 +56,27 @@ class TutorDataProvider with ChangeNotifier {
       return 'Error de conexión con el servidor.';
     }
   }
+
+  Future<String?> unlinkStudent(int tutorId, int studentId) async {
+    try {
+      final url = Uri.parse('$baseUrl/tutor/unlink-student');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'tutor_id': tutorId, 'student_id': studentId}),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        // Volvemos a cargar la lista de inmediato para actualizar el Dashboard en la web
+        await fetchDashboardData(tutorId);
+        return null; // Éxito
+      } else {
+        return data['detail'] ?? 'Error al desvincular estudiante';
+      }
+    } catch (e) {
+      return 'Error de conexión con el servidor.';
+    }
+  }
 }
