@@ -1,3 +1,5 @@
+import string
+
 from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +10,7 @@ import uvicorn
 from security import get_password_hash, verify_password
 from pydantic import BaseModel
 import random
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Dict, Any, List
 from fastapi import HTTPException # <-- Asegúrate de importar HTTPException en la parte superior
 
@@ -58,7 +60,8 @@ class UserUpdateData(BaseModel):
     inventory: dict
     equipped: dict
     world_progress: dict
-    lesson_progress: Dict[str, list] = {} # <-- NUEVO
+    lesson_progress: Dict[str, list] = {}
+    skill_level: int
 
 class ForgotPasswordRequest(BaseModel):
     email: str
@@ -82,6 +85,15 @@ class NextExerciseRequest(BaseModel):
     current_skill_level: int
     exclude_ids: List[int] = [] # Memoria temporal de la sesión
     target_concept: str = None # <-- NUEVO: El tema exacto que queremos
+
+class UpdateSkillRequest(BaseModel):
+    user_id: int
+    skill_level: int
+
+# --- SCHEMAS DE ENTRADA ---
+class LinkStudentRequest(BaseModel):
+    tutor_id: int
+    code: str
 
 # 2. Creamos la ruta (endpoint) para el login
 @app.post("/api/login")
@@ -130,7 +142,8 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         coins=500,
         lives=5,
         inventory={"hats": [], "glasses": [], "shirts": []},
-        equipped={"hats": None, "glasses": None, "shirts": None}
+        equipped={"hats": None, "glasses": None, "shirts": None},
+        skill_level=3
     )
     
     # Guardamos en la base de datos
@@ -192,6 +205,7 @@ async def get_user_profile(user_id: int, db: Session = Depends(get_db)):
         "world_progress": user.world_progress,
         "next_life_in_seconds": seconds_until_next, 
         "lesson_progress": user.lesson_progress,
+        "skill_level": user.skill_level
     }
 
 # --- 2. AL ACTUALIZAR ESTADÍSTICAS (PUT /api/users/{user_id}/stats) ---
@@ -209,7 +223,8 @@ async def sync_user_data(user_id: int, data: UserUpdateData, db: Session = Depen
     user.inventory = data.inventory
     user.equipped = data.equipped
     user.world_progress = data.world_progress
-    user.lesson_progress = data.lesson_progress # <-- NUEVO
+    user.lesson_progress = data.lesson_progress
+    user.skill_level = data.skill_level
     
     db.commit()
     return {"success": True, "message": "Datos sincronizados"}
@@ -466,6 +481,115 @@ async def get_next_dynamic_exercise(req: NextExerciseRequest, db: Session = Depe
             "concept_tag": chosen.concept_tag
         }
     }
+
+@app.post("/api/user/update-skill")
+def update_user_skill(req: UpdateSkillRequest, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == req.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    # Restringimos que esté en el rango educativo del 1 al 10
+    user.skill_level = max(1, min(10, req.skill_level))
+    db.commit()
+    
+    return {"status": "success", "skill_level": user.skill_level}
+
+# --- ENDPOINTS DE TUTORÍA Y SUPERVISIÓN ---
+
+@app.post("/api/student/generate-code")
+def generate_linking_code(req: CodeGenerationRequest, db: Session = Depends(get_db)):
+    # 1. Verificar que el estudiante exista
+    student = db.query(models.User).filter(models.User.id == req.student_id, models.User.role == "student").first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Estudiante no encontrado")
+    
+    # 2. Limpiar códigos viejos que pertenezcan a este estudiante para no saturar
+    db.query(models.LinkCode).filter(models.LinkCode.student_id == req.student_id).delete()
+    
+    # 3. Generar un código único y limpio de 6 caracteres alfanuméricos
+    characters = string.ascii_uppercase + string.digits
+    unique_code = ''.join(random.choices(characters, k=6))
+    
+    # 4. Registrar el nuevo código temporal en la base de datos (expira en 24h por defecto)
+    new_code = models.LinkCode(code=unique_code, student_id=req.student_id)
+    db.add(new_code)
+    db.commit()
+    
+    return {"status": "success", "code": unique_code}
+
+# 1. El estudiante genera su código desde la App Móvil
+@app.post("/api/student/{student_id}/generate-code")
+def generate_linking_code(student_id: int, db: Session = Depends(get_db)):
+    student = db.query(models.User).filter(models.User.id == student_id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Estudiante no encontrado")
+    
+    # Generar un código único de 6 caracteres alfanuméricos
+    characters = string.ascii_uppercase + string.digits
+    unique_code = ''.join(random.choices(characters, k=6))
+    
+    # Guardar en el perfil del estudiante con expiración de 24 horas
+    student.link_code = unique_code
+    student.link_code_expires_at = datetime.now(UTC) + timedelta(days=1)
+    db.commit()
+    
+    return {"status": "success", "code": unique_code}
+
+# 2. El tutor ingresa el código en la Web
+@app.post("/api/tutor/link")
+def link_student_to_tutor(req: LinkStudentRequest, db: Session = Depends(get_db)):
+    tutor = db.query(models.Tutor).filter(models.Tutor.id == req.tutor_id).first()
+    if not tutor:
+        raise HTTPException(status_code=404, detail="Tutor no encontrado")
+        
+    input_code = req.code.strip().upper()
+    
+    # Buscar qué estudiante tiene este código activo
+    student = db.query(models.User).filter(models.User.link_code == input_code).first()
+    
+    if not student:
+        raise HTTPException(status_code=400, detail="Código inválido o no encontrado")
+        
+    # Verificar si el código expiró
+    if student.link_code_expires_at.replace(tzinfo=UTC) < datetime.now(UTC):
+        # Limpiamos el código expirado
+        student.link_code = None
+        student.link_code_expires_at = None
+        db.commit()
+        raise HTTPException(status_code=400, detail="El código de enlace ha expirado")
+        
+    # Verificar si ya están vinculados
+    if student in tutor.students:
+        return {"status": "success", "message": "El estudiante ya estaba vinculado."}
+        
+    # Crear el enlace en la tabla intermedia (tutor_student)
+    tutor.students.append(student)
+    
+    # Eliminar el código del estudiante para que sea de un único uso
+    student.link_code = None
+    student.link_code_expires_at = None
+    db.commit()
+    
+    return {"status": "success", "message": f"Estudiante {student.name} vinculado correctamente."}
+
+# 3. El tutor consulta el Dashboard (Web)
+@app.get("/api/tutor/{tutor_id}/dashboard")
+def get_tutor_dashboard(tutor_id: int, db: Session = Depends(get_db)):
+    tutor = db.query(models.Tutor).filter(models.Tutor.id == tutor_id).first()
+    if not tutor:
+        raise HTTPException(status_code=404, detail="Tutor no encontrado")
+        
+    students_data = []
+    for s in tutor.students:
+        students_data.append({
+            "id": s.id,
+            "name": s.name,
+            "exp": s.exp,
+            "skill_level": s.skill_level, # Dato crucial de la IA
+            # Aquí podrías añadir los campos JSON de world_progress o exam_history si los tienes mapeados
+        })
+        
+    return {"status": "success", "tutor_name": tutor.name, "students": students_data}
 
 # Este bloque es para poder ejecutar el archivo directamente
 if __name__ == "__main__":

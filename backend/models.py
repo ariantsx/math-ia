@@ -1,5 +1,15 @@
-from sqlalchemy import Column, Integer, String, JSON, DateTime
+from sqlalchemy import Column, Integer, String, JSON, DateTime, ForeignKey, Table
 from database import Base
+from sqlalchemy.orm import relationship
+import datetime
+
+# --- TABLA INTERMEDIA (Muchos a Muchos) ---
+tutor_student_association = Table(
+    'tutor_student',
+    Base.metadata,
+    Column('tutor_id', Integer, ForeignKey('tutores.id', ondelete="CASCADE"), primary_key=True),
+    Column('student_id', Integer, ForeignKey('users.id', ondelete="CASCADE"), primary_key=True)
+)
 
 class User(Base):
     __tablename__ = "users"
@@ -46,6 +56,27 @@ class User(Base):
 
     # Guarda el progreso interno de cada nivel {"w1_0": [2, 4, 5]}
     lesson_progress = Column(JSON, default={})
+
+    skill_level = Column(Integer, default=3)
+
+    # NUEVO: Campos para la vinculación integrados en el usuario
+    link_code = Column(String(6), unique=True, nullable=True, index=True)
+    link_code_expires_at = Column(DateTime, nullable=True)
+
+    # Relación inversa (Opcional, pero útil si el alumno quiere ver quién lo supervisa)
+    tutores = relationship("Tutor", secondary=tutor_student_association, back_populates="students")
+
+# --- NUEVA TABLA DE TUTORES ---
+class Tutor(Base):
+    __tablename__ = "tutors"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    email = Column(String, unique=True, index=True)
+    password = Column(String)
+    
+    # NUEVO: Relación SQL pura. ¡Magia de SQLAlchemy!
+    students = relationship("User", secondary=tutor_student_association, back_populates="tutores")
 
 # --- NUEVA TABLA: Banco de Preguntas ---
 class Question(Base):

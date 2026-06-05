@@ -180,7 +180,8 @@ class LessonProvider extends ChangeNotifier {
             body: jsonEncode({
               'world_id': _currentWorldId,
               'level_index': _currentLevelIndex,
-              'current_skill_level': 3,
+              'current_skill_level':
+                  user.skillLevel, // <-- AQUÍ VA EL NIVEL DINÁMICO
               'exclude_ids': _seenExerciseIds,
               'target_concept': targetConcept,
             }),
@@ -238,6 +239,10 @@ class LessonProvider extends ChangeNotifier {
         if (_selectedAnswer == currentSlide.correctAnswerIndex) {
           _isCorrect = true;
           userProvider.addCoins(5);
+
+          // --- REFUERZO POSITIVO: Sube el nivel ---
+          userProvider.updateSkillLevel(true);
+
           _completedExercises.add(_currentIndex);
 
           userProvider.markExerciseCompleted(
@@ -263,6 +268,9 @@ class LessonProvider extends ChangeNotifier {
         } else {
           _isCorrect = false;
           userProvider.deductLife();
+
+          // --- REFUERZO NEGATIVO: Baja el nivel para que la IA le dé algo más fácil ---
+          userProvider.updateSkillLevel(false);
 
           if (userProvider.lives <= 0) {
             _showFloatingMessage(

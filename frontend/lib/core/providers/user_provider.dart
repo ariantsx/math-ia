@@ -30,6 +30,10 @@ class UserProvider extends ChangeNotifier {
   final int _baseExp = 100; // Cuánto cuesta el Nivel 1
   final double _multiplier = 1.5; // Qué tan difícil se vuelve cada nivel
 
+  // --- MOTOR DE IA (Reinforcement Learning) ---
+  int _skillLevel = 3; // Empieza en 3 por defecto (Escala del 1 al 10)
+  int get skillLevel => _skillLevel;
+
   // NUEVA VARIABLE: Progreso de los mundos
   Map<String, dynamic> _worldProgress = {};
   Map<String, dynamic> get worldProgress => _worldProgress;
@@ -183,6 +187,8 @@ class UserProvider extends ChangeNotifier {
         // --- NUEVO: Sincronizar el reloj del celular con el reloj del servidor ---
         _secondsUntilNextLife = data['next_life_in_seconds'] ?? 300;
 
+        _skillLevel = data['skill_level'];
+
         notifyListeners(); // Actualiza todas las pantallas
       }
     } catch (e) {
@@ -230,8 +236,9 @@ class UserProvider extends ChangeNotifier {
           'lives': _lives,
           'inventory': _inventory,
           'equipped': _equipped,
-          'world_progress': _worldProgress, // AÑADIMOS EL PROGRESO
+          'world_progress': _worldProgress,
           'lesson_progress': _lessonProgress,
+          'skill_level': _skillLevel,
         }),
       );
     } catch (e) {
@@ -296,6 +303,24 @@ class UserProvider extends ChangeNotifier {
     return _savedDynamicExercises[exerciseKey];
   }
 
+  // --- REFUERZO DE IA ---
+  Future<void> updateSkillLevel(bool isCorrect) async {
+    if (isCorrect) {
+      // Recompensa: Sube la dificultad si acertó (Máximo 10)
+      if (_skillLevel < 10) {
+        _skillLevel++;
+      }
+    } else {
+      // Castigo/Ajuste: Baja la dificultad si se equivocó (Mínimo 1)
+      if (_skillLevel > 1) {
+        _skillLevel--;
+      }
+    }
+
+    notifyListeners();
+    _syncWithBackend();
+  }
+
   // --- LIMPIEZA DE SESIÓN ---
   void clearData() {
     _userId = 0;
@@ -312,6 +337,8 @@ class UserProvider extends ChangeNotifier {
     _lessonProgress = {};
     _savedDynamicExercises = {};
     _examHistory = [];
+
+    _skillLevel = 3; // Reseteamos al cerrar sesión
 
     notifyListeners();
   }
