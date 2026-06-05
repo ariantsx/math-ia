@@ -37,6 +37,29 @@ class TutorAuthProvider with ChangeNotifier {
     }
   }
 
+  Future<String?> register(String name, String email, String password) async {
+    try {
+      final url = Uri.parse('$baseUrl/tutor/register');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'name': name, 'email': email, 'password': password}),
+      );
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        // Registro exitoso. Opcional: Podrías hacer login automático aquí.
+        return null; // Null indica que no hubo errores
+      } else {
+        return data['detail'] ?? 'Error al registrar tutor';
+      }
+    } catch (e) {
+      print('Error en registro de tutor: $e');
+      return 'Error de conexión con el servidor.';
+    }
+  }
+
   void logout() {
     _tutorId = null;
     _tutorName = null;

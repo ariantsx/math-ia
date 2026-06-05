@@ -92,6 +92,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                 ),
               ),
+              // ... código existente del botón de Login ...
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                // ...
+              ),
+              // <-- AÑADE ESTO DEBAJO DEL BOTÓN DE LOGIN -->
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () => Navigator.pushNamed(context, '/register'),
+                child: const Text('¿No tienes cuenta? Regístrate como Tutor.'),
+              ),
             ],
           ),
         ),

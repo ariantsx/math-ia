@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tutoring/screens/register_screen.dart';
 import 'providers/tutor_auth_provider.dart';
 import 'providers/tutor_data_provider.dart'; // <-- NUEVO
 import 'screens/login_screen.dart';
@@ -32,7 +33,8 @@ class MathIATutorApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/login': (context) => LoginScreen(),
-        '/dashboard': (context) => DashboardScreen(), // <-- RUTA ACTIVADA
+        '/register': (context) => RegisterScreen(), // <-- Nueva ruta
+        '/dashboard': (context) => DashboardScreen(),
       },
     );
   }
