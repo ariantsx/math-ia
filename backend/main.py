@@ -594,12 +594,27 @@ def get_tutor_dashboard(tutor_id: int, db: Session = Depends(get_db)):
         
     students_data = []
     for s in tutor.students:
+        # 1. Extraer la nota del último examen (asumiendo que exam_history es una lista JSON)
+        last_exam_score = "Sin intentos"
+        if getattr(s, "exam_history", None) and isinstance(s.exam_history, list) and len(s.exam_history) > 0:
+            # Tomamos el último elemento de la lista
+            last_exam = s.exam_history[-1] 
+            last_exam_score = f"{last_exam.get('score', 0)}/20" # Ajusta el '20' si calificas sobre 10 o 100
+            
+        # 2. Calcular el progreso de mundos (asumiendo que world_progress es un dict JSON {"w1": 100, "w2": 50})
+        worlds_completed = 0
+        if getattr(s, "world_progress", None) and isinstance(s.world_progress, dict):
+            # Contamos cuántos mundos están al 100%
+            worlds_completed = sum(1 for progress in s.world_progress.values() if progress == 100)
+
         students_data.append({
             "id": s.id,
             "name": s.name,
+            "email": s.email,
             "exp": s.exp,
-            "skill_level": s.skill_level, # Dato crucial de la IA
-            # Aquí podrías añadir los campos JSON de world_progress o exam_history si los tienes mapeados
+            "skill_level": s.skill_level,
+            "last_exam_score": last_exam_score,
+            "worlds_completed": worlds_completed
         })
         
     return {"status": "success", "tutor_name": tutor.name, "students": students_data}

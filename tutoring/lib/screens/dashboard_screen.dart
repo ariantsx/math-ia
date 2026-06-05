@@ -189,7 +189,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent:
               400, // Hace que las tarjetas se adapten al tamaño del monitor
-          childAspectRatio: 1.5,
+          childAspectRatio: 1.4,
           crossAxisSpacing: 20,
           mainAxisSpacing: 20,
         ),
@@ -214,30 +214,71 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
-                          student['name'],
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              student['name'],
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4), // Separación pequeña
+                            // <-- NUEVO: EL CORREO DEBAJO DEL NOMBRE
+                            Text(
+                              student['email'],
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black54,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
+
+                  // ... dentro de la tarjeta (Card), reemplaza las estadísticas con esto:
                   const Divider(height: 30),
+
+                  // Nivel de la Inteligencia Artificial
                   _buildStatRow(
-                    Icons.timeline,
+                    Icons.psychology,
                     'Nivel Adaptativo (IA)',
-                    '${student['skill_level']} / 10',
+                    'Nivel ${student['skill_level']} / 10',
                     Colors.purple,
                   ),
                   const SizedBox(height: 10),
+
+                  // Puntos de Experiencia
                   _buildStatRow(
                     Icons.star,
                     'Experiencia',
                     '${student['exp']} XP',
                     Colors.orange,
+                  ),
+                  const SizedBox(height: 10),
+
+                  // NUEVO: Nota del Último Examen
+                  _buildStatRow(
+                    Icons.assignment_turned_in,
+                    'Último Examen',
+                    '${student['last_exam_score']}',
+                    student['last_exam_score'] == 'Sin intentos'
+                        ? Colors.grey
+                        : Colors.redAccent,
+                  ),
+                  const SizedBox(height: 10),
+
+                  // NUEVO: Mundos Completados
+                  _buildStatRow(
+                    Icons.public,
+                    'Mundos Completados',
+                    '${student['worlds_completed']} / 6',
+                    Colors.teal,
                   ),
                 ],
               ),
