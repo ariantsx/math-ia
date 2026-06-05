@@ -28,6 +28,98 @@ class GamesScreen extends StatelessWidget {
     );
   }
 
+  void _showTutorCodeDialog(BuildContext context, UserProvider userProvider) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: const Row(
+            children: [
+              Icon(Icons.supervisor_account, color: Colors.blue),
+              SizedBox(width: 10),
+              Text('Código de Vinculación'),
+            ],
+          ),
+          content: StatefulBuilder(
+            builder: (context, setModalState) {
+              // Si el código es nulo, mostramos la instrucción y el botón de generar
+              if (userProvider.linkCode == null) {
+                return const Text(
+                  'Genera un código temporal para compartirlo con tu tutor o hermano mayor y supervisar tu progreso adaptativo.',
+                  textAlign: TextAlign.center,
+                );
+              } else {
+                // Si ya existe el código, lo mostramos en grande
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Comparte este código con tu tutor. Expira automáticamente en 24 horas:',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.blue, width: 2),
+                      ),
+                      child: Text(
+                        userProvider.linkCode!,
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 4,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cerrar', style: TextStyle(color: Colors.grey)),
+            ),
+            if (userProvider.linkCode == null)
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                onPressed: () async {
+                  // Ejecutamos la petición HTTP que creamos en el UserProvider
+                  bool success = await userProvider.generateTutorCode();
+                  if (success) {
+                    // Forzamos el redibujado del diálogo interno
+                    (context as Element).markNeedsBuild();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Error al conectar con la IA de MathIA'),
+                      ),
+                    );
+                  }
+                },
+                child: const Text(
+                  'Generar Código',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
   // --- FUNCIÓN PARA MOSTRAR EL POPUP DE JUEGOS ---
   // Importa la nueva pantalla que crearemos
   // import 'worlds_map_screen.dart';
@@ -229,6 +321,9 @@ class GamesScreen extends StatelessWidget {
                           builder: (context) => const ProfileScreen(),
                         ),
                       );
+                    } else if (value == 'tutor_code') {
+                      // <-- NUEVA ACCIÓN INTERMEDIA
+                      _showTutorCodeDialog(context, user);
                     } else if (value == 'logout') {
                       _logout(context);
                     }
@@ -244,6 +339,20 @@ class GamesScreen extends StatelessWidget {
                               Text(
                                 'Ver perfil',
                                 style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuDivider(),
+                        const PopupMenuItem<String>(
+                          value: 'tutor_code',
+                          child: Row(
+                            children: [
+                              Icon(Icons.vpn_key, color: Colors.blue),
+                              SizedBox(width: 8),
+                              Text(
+                                'Código de Tutor',
+                                style: TextStyle(color: Colors.blue),
                               ),
                             ],
                           ),

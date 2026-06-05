@@ -52,6 +52,10 @@ class UserProvider extends ChangeNotifier {
   String get name => _name;
   String get email => _email;
 
+  // --- SUPERVISIÓN / TUTORÍA ---
+  String? _linkCode;
+  String? get linkCode => _linkCode;
+
   // 1. Calcula en qué nivel estás basado en tu Experiencia Total
   int get level {
     int lvl = 1;
@@ -321,6 +325,31 @@ class UserProvider extends ChangeNotifier {
     _syncWithBackend();
   }
 
+  // --- GENERACIÓN DE CÓDIGO DE TUTOR ---
+  Future<bool> generateTutorCode() async {
+    try {
+      // Recuerda usar localhost en el emulador, o tu IP de red si pruebas en físico
+      final url = Uri.parse(
+        'http://localhost:3000/api/student/$_userId/generate-code',
+      );
+
+      final response = await http
+          .post(url, headers: {'Content-Type': 'application/json'})
+          .timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        _linkCode = data['code']; // Guardamos el código (ej. "A7B9X2")
+        notifyListeners();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('Error al generar código de vinculación: $e');
+      return false;
+    }
+  }
+
   // --- LIMPIEZA DE SESIÓN ---
   void clearData() {
     _userId = 0;
@@ -339,6 +368,8 @@ class UserProvider extends ChangeNotifier {
     _examHistory = [];
 
     _skillLevel = 3; // Reseteamos al cerrar sesión
+
+    _linkCode = null; // En tu método clearData()
 
     notifyListeners();
   }
