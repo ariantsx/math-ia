@@ -7,7 +7,7 @@ import datetime
 tutor_student_association = Table(
     'tutor_student',
     Base.metadata,
-    Column('tutor_id', Integer, ForeignKey('tutores.id', ondelete="CASCADE"), primary_key=True),
+    Column('tutor_id', Integer, ForeignKey('tutors.id', ondelete="CASCADE"), primary_key=True),
     Column('student_id', Integer, ForeignKey('users.id', ondelete="CASCADE"), primary_key=True)
 )
 
@@ -76,7 +76,7 @@ class Tutor(Base):
     password = Column(String)
     
     # NUEVO: Relación SQL pura. ¡Magia de SQLAlchemy!
-    students = relationship("User", secondary=tutor_student_association, back_populates="tutores")
+    students = relationship("User", secondary=tutor_student_association, back_populates="tutors")
 
 # --- NUEVA TABLA: Banco de Preguntas ---
 class Question(Base):
