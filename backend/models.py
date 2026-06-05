@@ -64,7 +64,7 @@ class User(Base):
     link_code_expires_at = Column(DateTime, nullable=True)
 
     # Relación inversa (Opcional, pero útil si el alumno quiere ver quién lo supervisa)
-    tutores = relationship("Tutor", secondary=tutor_student_association, back_populates="students")
+    tutors = relationship("Tutor", secondary=tutor_student_association, back_populates="students")
 
 # --- NUEVA TABLA DE TUTORES ---
 class Tutor(Base):

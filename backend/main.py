@@ -90,7 +90,9 @@ class UpdateSkillRequest(BaseModel):
     user_id: int
     skill_level: int
 
-# --- SCHEMAS DE ENTRADA ---
+class CodeGenerationRequest(BaseModel):
+    student_id: int
+
 class LinkStudentRequest(BaseModel):
     tutor_id: int
     code: str

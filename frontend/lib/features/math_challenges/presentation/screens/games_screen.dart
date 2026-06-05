@@ -348,11 +348,11 @@ class GamesScreen extends StatelessWidget {
                           value: 'tutor_code',
                           child: Row(
                             children: [
-                              Icon(Icons.vpn_key, color: Colors.blue),
-                              SizedBox(width: 8),
+                              Icon(Icons.vpn_key, color: Colors.blueAccent),
+                              SizedBox(width: 12),
                               Text(
-                                'Código de Tutor',
-                                style: TextStyle(color: Colors.blue),
+                                'Vincular tutor',
+                                style: TextStyle(fontSize: 16),
                               ),
                             ],
                           ),
