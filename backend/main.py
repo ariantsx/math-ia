@@ -95,6 +95,7 @@ class CodeGenerationRequest(BaseModel):
 
 class LinkStudentRequest(BaseModel):
     tutor_id: int
+    student_email: str
     code: str
 
 class TutorRegisterRequest(BaseModel):
@@ -113,9 +114,6 @@ class UnlinkStudentRequest(BaseModel):
 # 2. Creamos la ruta (endpoint) para el login
 @app.post("/api/login")
 async def login(user_data: LoginData, db: Session = Depends(get_db)):
-    # Imprimimos en la consola del servidor lo que llegó desde Flutter
-    print(f"Intento de login con: {user_data.email}")
-    
     # 1. Buscamos al usuario en la base de datos por su email
     # Esto equivale a: SELECT * FROM users WHERE email = '...' LIMIT 1
     db_user = db.query(models.User).filter(models.User.email == user_data.email).first()
@@ -558,6 +556,7 @@ def link_student_to_tutor(req: LinkStudentRequest, db: Session = Depends(get_db)
         raise HTTPException(status_code=404, detail="Tutor no encontrado")
         
     input_code = req.code.strip().upper()
+    input_email = req.student_email.strip().lower() # Normalizamos el correo
     
     # Buscar qué estudiante tiene este código activo
     student = db.query(models.User).filter(models.User.link_code == input_code).first()
@@ -565,9 +564,14 @@ def link_student_to_tutor(req: LinkStudentRequest, db: Session = Depends(get_db)
     if not student:
         raise HTTPException(status_code=400, detail="Código inválido o no encontrado")
         
+    # --- NUEVA CAPA DE SEGURIDAD: VERIFICAR EL CORREO ---
+    if student.email.lower() != input_email:
+        # Nota: Por seguridad, lanzamos un error ambiguo para no dar pistas a atacantes
+        raise HTTPException(status_code=400, detail="El código o el correo no coinciden")
+    # ----------------------------------------------------
+        
     # Verificar si el código expiró
     if student.link_code_expires_at.replace(tzinfo=UTC) < datetime.now(UTC):
-        # Limpiamos el código expirado
         student.link_code = None
         student.link_code_expires_at = None
         db.commit()
@@ -577,10 +581,10 @@ def link_student_to_tutor(req: LinkStudentRequest, db: Session = Depends(get_db)
     if student in tutor.students:
         return {"status": "success", "message": "El estudiante ya estaba vinculado."}
         
-    # Crear el enlace en la tabla intermedia (tutor_student)
+    # Crear el enlace en la tabla intermedia
     tutor.students.append(student)
     
-    # Eliminar el código del estudiante para que sea de un único uso
+    # Eliminar el código del estudiante
     student.link_code = None
     student.link_code_expires_at = None
     db.commit()

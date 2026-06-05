@@ -28,7 +28,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   // --- MODAL PARA INGRESAR EL CÓDIGO ---
+  // En lib/screens/dashboard_screen.dart
+
   void _showLinkDialog(BuildContext context, int tutorId) {
+    final emailController = TextEditingController(); // <-- NUEVO CONTROLADOR
     final codeController = TextEditingController();
     bool isLinking = false;
 
@@ -43,9 +46,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Pídele al estudiante que genere un código desde su aplicación MathIA e ingrésalo aquí:',
+                    'Para proteger la privacidad del estudiante, ingresa su correo registrado y el código de 6 dígitos:',
                   ),
                   const SizedBox(height: 16),
+
+                  // --- NUEVO CAMPO: CORREO ---
+                  TextField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      labelText: 'Correo del Estudiante',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.email),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // ---------------------------
+
+                  // Campo existente: Código
                   TextField(
                     controller: codeController,
                     maxLength: 6,
@@ -71,7 +89,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   onPressed: isLinking
                       ? null
                       : () async {
-                          if (codeController.text.trim().length < 6) return;
+                          // Validamos que ambos campos estén llenos
+                          if (codeController.text.trim().length < 6 ||
+                              emailController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Por favor, ingresa el correo y un código válido.',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
 
                           setDialogState(() => isLinking = true);
 
@@ -79,8 +108,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             context,
                             listen: false,
                           );
+
+                          // <-- PASAMOS EL CORREO A LA FUNCIÓN
                           String? error = await dataProvider.linkStudent(
                             tutorId,
+                            emailController.text.trim(),
                             codeController.text.trim(),
                           );
 

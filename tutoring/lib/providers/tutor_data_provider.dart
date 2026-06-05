@@ -33,24 +33,30 @@ class TutorDataProvider with ChangeNotifier {
   }
 
   // 2. Vincular un nuevo alumno con el código de 6 dígitos
-  Future<String?> linkStudent(int tutorId, String code) async {
+  Future<String?> linkStudent(
+    int tutorId,
+    String studentEmail,
+    String code,
+  ) async {
     try {
       final url = Uri.parse('$baseUrl/tutor/link');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'tutor_id': tutorId, 'code': code.toUpperCase()}),
+        body: jsonEncode({
+          'tutor_id': tutorId,
+          'student_email': studentEmail, // <-- Enviamos el correo a Python
+          'code': code.toUpperCase(),
+        }),
       );
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // Recargamos la lista si fue exitoso
         await fetchDashboardData(tutorId);
-        return null; // Null significa que no hubo error
+        return null;
       } else {
-        return data['detail'] ??
-            'Error desconocido'; // Retorna el mensaje de error del backend
+        return data['detail'] ?? 'Error desconocido';
       }
     } catch (e) {
       return 'Error de conexión con el servidor.';
