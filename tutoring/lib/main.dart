@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/tutor_auth_provider.dart';
+import 'providers/tutor_data_provider.dart'; // <-- NUEVO
 import 'screens/login_screen.dart';
+import 'screens/dashboard_screen.dart'; // <-- NUEVO
 
 void main() {
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => TutorAuthProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => TutorAuthProvider()),
+        ChangeNotifierProvider(create: (_) => TutorDataProvider()), // <-- NUEVO
+      ],
       child: const MathIATutorApp(),
     ),
   );
@@ -21,13 +26,12 @@ class MathIATutorApp extends StatelessWidget {
       title: 'MathIA Tutor Dashboard',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        scaffoldBackgroundColor:
-            Colors.grey[100], // Fondo gris claro para la web
+        scaffoldBackgroundColor: Colors.grey[100],
       ),
       initialRoute: '/login',
       routes: {
         '/login': (context) => LoginScreen(),
-        // '/dashboard': (context) => DashboardScreen(), // La crearemos en el siguiente paso
+        '/dashboard': (context) => DashboardScreen(), // <-- RUTA ACTIVADA
       },
     );
   }
