@@ -60,6 +60,9 @@ class User(Base):
     # Guarda el progreso interno de cada nivel {"w1_0": [2, 4, 5]}
     lesson_progress = Column(JSON, default={})
 
+    # Historial de errores para el Dashboard del Tutor ---
+    failed_exercises = Column(JSON, default=[])
+
     skill_level = Column(Integer, default=3)
 
     # NUEVO: Campos para la vinculación integrados en el usuario

@@ -46,6 +46,10 @@ class UserProvider extends ChangeNotifier {
   Map<String, dynamic> _savedDynamicExercises = {};
   Map<String, dynamic> get savedDynamicExercises => _savedDynamicExercises;
 
+  // --- NUEVO: Historial de Ejercicios Fallidos para el Tutor ---
+  List<dynamic> _failedExercises = [];
+  List<dynamic> get failedExercises => _failedExercises;
+
   List<dynamic> _examHistory = [];
 
   // Getters para que la UI lea los datos
@@ -188,6 +192,7 @@ class UserProvider extends ChangeNotifier {
         // Leemos el progreso al iniciar sesión
         _worldProgress = data['world_progress'] ?? {};
         _lessonProgress = data['lesson_progress'] ?? {};
+        _failedExercises = data['failed_exercises'] ?? [];
 
         // --- NUEVO: Sincronizar el reloj del celular con el reloj del servidor ---
         _secondsUntilNextLife = data['next_life_in_seconds'] ?? 300;
@@ -245,6 +250,7 @@ class UserProvider extends ChangeNotifier {
           'lesson_progress': _lessonProgress,
           'skill_level': _skillLevel,
           'worlds_completed': worldsCompleted,
+          'failed_exercises': _failedExercises,
         }),
       );
     } catch (e) {
@@ -317,6 +323,32 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  // --- RECOPILAR ERRORES PARA EL TUTOR ---
+  void addFailedExercise({
+    required String worldId,
+    required String conceptTag,
+    required String questionText,
+    required String feedback,
+  }) {
+    // Agregamos el nuevo error al inicio de la lista (el más reciente primero)
+    _failedExercises.insert(0, {
+      'world_id': worldId,
+      'concept_tag': conceptTag,
+      'question_text': questionText,
+      'feedback': feedback,
+      'timestamp': DateTime.now()
+          .toIso8601String(), // Para saber cuándo ocurrió
+    });
+
+    // Mantenemos solo los últimos 20 errores para no hacer pesado el JSON
+    if (_failedExercises.length > 20) {
+      _failedExercises = _failedExercises.sublist(0, 20);
+    }
+
+    notifyListeners();
+    _syncWithBackend(); // Enviamos la alerta al backend de inmediato
+  }
+
   // --- NUEVO: Recuperar ejercicio para el Repaso ---
   Map<String, dynamic>? getSavedDynamicExercise(
     String worldId,
@@ -384,6 +416,7 @@ class UserProvider extends ChangeNotifier {
     _equipped = {};
     _worldProgress = {};
     _lessonProgress = {};
+    _failedExercises = [];
     _savedDynamicExercises = {};
     _examHistory = [];
 

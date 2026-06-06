@@ -63,6 +63,7 @@ class UserUpdateData(BaseModel):
     worlds_completed: int
     lesson_progress: Dict[str, list] = {}
     skill_level: int
+    failed_exercises: list = []
 
 class ForgotPasswordRequest(BaseModel):
     email: str
@@ -248,6 +249,7 @@ async def sync_user_data(user_id: int, data: UserUpdateData, db: Session = Depen
     user.worlds_completed = data.worlds_completed
     user.lesson_progress = data.lesson_progress
     user.skill_level = data.skill_level
+    user.failed_exercises = data.failed_exercises
     
     db.commit()
     return {"success": True, "message": "Datos sincronizados"}
@@ -622,7 +624,8 @@ def get_tutor_dashboard(tutor_id: int, db: Session = Depends(get_db)):
             "exp": s.exp,
             "skill_level": s.skill_level,
             "last_exam_score": last_exam_score,
-            "worlds_completed": getattr(s, "worlds_completed", 0) # <-- Simplemente leemos el valor de la BD
+            "worlds_completed": getattr(s, "worlds_completed", 0),
+            "failed_exercises": getattr(s, "failed_exercises", [])
         })
         
     return {"status": "success", "tutor_name": tutor.name, "students": students_data}

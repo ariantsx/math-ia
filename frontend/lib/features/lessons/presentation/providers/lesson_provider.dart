@@ -272,6 +272,15 @@ class LessonProvider extends ChangeNotifier {
           // --- REFUERZO NEGATIVO: Baja el nivel para que la IA le dé algo más fácil ---
           userProvider.updateSkillLevel(false);
 
+          // --- NUEVO: REGISTRAMOS EL ERROR EN EL HISTORIAL PARA EL TUTOR ---
+          userProvider.addFailedExercise(
+            worldId: _currentWorldId ?? 'Desconocido',
+            conceptTag: currentSlide.conceptTag ?? 'Concepto General',
+            questionText: currentSlide.content,
+            feedback:
+                currentSlide.feedback ?? 'Repasar conceptos de este tema.',
+          );
+
           if (userProvider.lives <= 0) {
             _showFloatingMessage(
               context,

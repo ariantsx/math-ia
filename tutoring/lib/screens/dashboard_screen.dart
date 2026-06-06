@@ -232,6 +232,194 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  void _showFailedExercisesDialog(
+    BuildContext context,
+    String studentName,
+    List<dynamic> failedExercises,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(
+                failedExercises.isEmpty ? Icons.verified_user : Icons.analytics,
+                color: failedExercises.isEmpty
+                    ? Colors.green
+                    : Colors.redAccent,
+              ),
+              const SizedBox(width: 12),
+              Text('Historial de Prácticas: $studentName'),
+            ],
+          ),
+          content: SizedBox(
+            width: 600, // Ancho cómodo para lectura web
+            height: 450, // Altura fija con scroll interno seguro
+            child: failedExercises.isEmpty
+                ? const Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.emoji_events_outlined,
+                          size: 60,
+                          color: Colors.green,
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          '¡Excelente rendimiento!',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Este estudiante no tiene errores registrados en sus lecciones actuales.',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: failedExercises.length,
+                    itemBuilder: (context, index) {
+                      final exercise = failedExercises[index];
+                      // Formateamos las etiquetas conceptuales para que se vean más amigables
+                      String concept = (exercise['concept_tag'] ?? 'General')
+                          .toString()
+                          .replaceAll('_', ' ')
+                          .toUpperCase();
+
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        color: Colors.red.shade50.withOpacity(0.5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(color: Colors.red.shade100),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Cabecera: Identificador del mundo y Tag conceptual
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.redAccent.shade100,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      'MUNDO: ${(exercise['world_id'] ?? '').toString().toUpperCase()}',
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    concept,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red.shade700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Pregunta fallada
+                              const Text(
+                                'Ejercicio planteado:',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                exercise['question_text'] ?? 'Sin enunciado.',
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const Divider(height: 24),
+
+                              // Feedback Pedagógico de la IA
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(
+                                    Icons.lightbulb_outline,
+                                    color: Colors.green,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Guía de reforzamiento recomendada:',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.green,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          exercise['feedback'] ??
+                                              'No hay sugerencias específicas de repaso para este ítem.',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.grey.shade800,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cerrar Historial',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<TutorAuthProvider>(context);
@@ -441,6 +629,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           'Mundos Completados',
                           '${student['worlds_completed']} / 6',
                           Colors.teal,
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // --- NUEVO: BOTÓN DE ALERTA E HISTORIAL DE ERRORES ---
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor:
+                                  (student['failed_exercises'] as List).isEmpty
+                                  ? Colors.green
+                                  : Colors.redAccent,
+                              side: BorderSide(
+                                color:
+                                    (student['failed_exercises'] as List)
+                                        .isEmpty
+                                    ? Colors.green.shade300
+                                    : Colors.redAccent.shade100,
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            icon: Icon(
+                              (student['failed_exercises'] as List).isEmpty
+                                  ? Icons.check_circle_outline
+                                  : Icons.assignment_late_outlined,
+                            ),
+                            label: Text(
+                              (student['failed_exercises'] as List).isEmpty
+                                  ? 'Sin errores recientes'
+                                  : 'Ver ejercicios fallidos (${(student['failed_exercises'] as List).length})',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onPressed: () {
+                              // Desplegamos el modal con los detalles de los errores
+                              _showFailedExercisesDialog(
+                                context,
+                                student['name'],
+                                student['failed_exercises'] ?? [],
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
