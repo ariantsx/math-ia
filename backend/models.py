@@ -51,6 +51,9 @@ class User(Base):
     # Guardaremos el progreso como un diccionario {"id_del_mundo": niveles_completados}
     world_progress = Column(JSON, default={})
 
+    # Guardaremos el cálculo exacto que nos mande el celular
+    worlds_completed = Column(Integer, default=0)
+
     # Guardar el momento exacto en que empezó a regenerar vidas
     last_life_update = Column(DateTime, default=None)
 

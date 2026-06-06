@@ -60,6 +60,7 @@ class UserUpdateData(BaseModel):
     inventory: dict
     equipped: dict
     world_progress: dict
+    worlds_completed: int
     lesson_progress: Dict[str, list] = {}
     skill_level: int
 
@@ -244,6 +245,7 @@ async def sync_user_data(user_id: int, data: UserUpdateData, db: Session = Depen
     user.inventory = data.inventory
     user.equipped = data.equipped
     user.world_progress = data.world_progress
+    user.worlds_completed = data.worlds_completed
     user.lesson_progress = data.lesson_progress
     user.skill_level = data.skill_level
     
@@ -608,18 +610,10 @@ def get_tutor_dashboard(tutor_id: int, db: Session = Depends(get_db)):
         
     students_data = []
     for s in tutor.students:
-        # 1. Extraer la nota del último examen (asumiendo que exam_history es una lista JSON)
         last_exam_score = "Sin intentos"
         if getattr(s, "exam_history", None) and isinstance(s.exam_history, list) and len(s.exam_history) > 0:
-            # Tomamos el último elemento de la lista
             last_exam = s.exam_history[-1] 
-            last_exam_score = f"{last_exam.get('score', 0)}/20" # Ajusta el '20' si calificas sobre 10 o 100
-            
-        # 2. Calcular el progreso de mundos (asumiendo que world_progress es un dict JSON {"w1": 100, "w2": 50})
-        worlds_completed = 0
-        if getattr(s, "world_progress", None) and isinstance(s.world_progress, dict):
-            # Contamos cuántos mundos están al 100%
-            worlds_completed = sum(1 for progress in s.world_progress.values() if progress == 100)
+            last_exam_score = f"{last_exam.get('score', 0)}/20"
 
         students_data.append({
             "id": s.id,
@@ -628,7 +622,7 @@ def get_tutor_dashboard(tutor_id: int, db: Session = Depends(get_db)):
             "exp": s.exp,
             "skill_level": s.skill_level,
             "last_exam_score": last_exam_score,
-            "worlds_completed": worlds_completed
+            "worlds_completed": getattr(s, "worlds_completed", 0) # <-- Simplemente leemos el valor de la BD
         })
         
     return {"status": "success", "tutor_name": tutor.name, "students": students_data}

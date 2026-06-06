@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:math_ia/core/constants/worlds_catalog.dart';
 
 class UserProvider extends ChangeNotifier {
   // Configura tu URL de FastAPI
@@ -243,6 +244,7 @@ class UserProvider extends ChangeNotifier {
           'world_progress': _worldProgress,
           'lesson_progress': _lessonProgress,
           'skill_level': _skillLevel,
+          'worlds_completed': worldsCompleted,
         }),
       );
     } catch (e) {
@@ -260,6 +262,24 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
       _syncWithBackend(); // Guardamos silenciosamente
     }
+  }
+
+  // --- NUEVO: Cálculo dinámico desde el Frontend ---
+  int get worldsCompleted {
+    int completed = 0;
+    // Recorremos el catálogo oficial del frontend
+    for (var world in WorldsCatalog.worlds) {
+      String worldId = world['id'];
+      int levelsNeeded =
+          (world['levels'] as List).length; // Niveles que exige este mundo
+      int currentProgress =
+          _worldProgress[worldId] ?? 0; // Niveles que pasó el alumno
+
+      if (currentProgress >= levelsNeeded) {
+        completed++;
+      }
+    }
+    return completed;
   }
 
   // --- NUEVAS FUNCIONES PARA LOS EJERCICIOS ---
