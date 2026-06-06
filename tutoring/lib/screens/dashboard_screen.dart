@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutoring/widgets/experience_pie_chart.dart';
 import 'package:tutoring/widgets/group_performance_chart.dart';
+import 'package:tutoring/widgets/students_ranking_table.dart';
 import '../providers/tutor_auth_provider.dart';
 import '../providers/tutor_data_provider.dart';
 
@@ -480,207 +481,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // --- NUEVA SECCIÓN DE ANALÍTICA GRUPAL LADO A LADO ---
-          if (students.length >= 2) ...[
-            Row(
-              children: [
-                // Gráfico 1: Barras (IA)
-                Expanded(child: GroupPerformanceChart(students: students)),
+          // Sección de Gráficas Grupales superiores
+          Row(
+            children: [
+              Expanded(child: GroupPerformanceChart(students: students)),
+              const SizedBox(width: 24),
+              Expanded(child: ExperiencePieChart(students: students)),
+            ],
+          ),
+          const SizedBox(height: 32),
 
-                const SizedBox(width: 24), // Separación entre gráficos
-                // Gráfico 2: Pastel (XP)
-                Expanded(child: ExperiencePieChart(students: students)),
-              ],
-            ),
-            const SizedBox(height: 32),
-          ],
-
-          // -----------------------------------------------------
+          // Título de la sección
           const Text(
-            'Detalle por Estudiante',
+            'Ranking de Rendimiento (Últimas Notas)',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
           ),
           const SizedBox(height: 16),
-          // ----------------------------------------
 
-          // --- EL GRIDVIEW ORIGINAL AHORA ENVUELTO EN EXPANDED ---
-          Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 400,
-                childAspectRatio: 1.1, // Mantén el ratio que arreglamos antes
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-              ),
-              itemCount: students.length,
-              itemBuilder: (context, index) {
-                final student = students[index];
-                return Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // --- CABECERA ACTUALIZADA CON BOTÓN DE ELIMINAR ---
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Bloque de información (Avatar + Nombre + Correo)
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 24,
-                                    backgroundColor: Colors.blue.shade100,
-                                    child: const Icon(
-                                      Icons.person,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          student['name'],
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          student['email'],
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.black54,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            // NUEVO: BOTÓN DE DESVINCULACIÓN CON CONFIRMACIÓN
-                            IconButton(
-                              icon: const Icon(
-                                Icons.person_remove_alt_1,
-                                color: Colors.redAccent,
-                              ),
-                              tooltip: 'Desvincular Estudiante',
-                              onPressed: () => _showUnlinkConfirmation(
-                                context,
-                                tutorId,
-                                student['id'],
-                                student['name'],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(height: 30),
-
-                        // Nivel de la Inteligencia Artificial
-                        _buildStatRow(
-                          Icons.psychology,
-                          'Nivel Adaptativo (IA)',
-                          'Nivel ${student['skill_level']} / 10',
-                          Colors.purple,
-                        ),
-                        const SizedBox(height: 10),
-
-                        // Puntos de Experiencia
-                        _buildStatRow(
-                          Icons.star,
-                          'Experiencia',
-                          '${student['exp']} XP',
-                          Colors.orange,
-                        ),
-                        const SizedBox(height: 10),
-
-                        // NUEVO: Nota del Último Examen
-                        _buildStatRow(
-                          Icons.assignment_turned_in,
-                          'Último Examen',
-                          '${student['last_exam_score']}',
-                          student['last_exam_score'] == 'Sin intentos'
-                              ? Colors.grey
-                              : Colors.redAccent,
-                        ),
-                        const SizedBox(height: 10),
-
-                        // NUEVO: Mundos Completados
-                        _buildStatRow(
-                          Icons.public,
-                          'Mundos Completados',
-                          '${student['worlds_completed']} / 6',
-                          Colors.teal,
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // --- NUEVO: BOTÓN DE ALERTA E HISTORIAL DE ERRORES ---
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor:
-                                  (student['failed_exercises'] as List).isEmpty
-                                  ? Colors.green
-                                  : Colors.redAccent,
-                              side: BorderSide(
-                                color:
-                                    (student['failed_exercises'] as List)
-                                        .isEmpty
-                                    ? Colors.green.shade300
-                                    : Colors.redAccent.shade100,
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                            ),
-                            icon: Icon(
-                              (student['failed_exercises'] as List).isEmpty
-                                  ? Icons.check_circle_outline
-                                  : Icons.assignment_late_outlined,
-                            ),
-                            label: Text(
-                              (student['failed_exercises'] as List).isEmpty
-                                  ? 'Sin errores recientes'
-                                  : 'Ver ejercicios fallidos (${(student['failed_exercises'] as List).length})',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            onPressed: () {
-                              // Desplegamos el modal con los detalles de los errores
-                              _showFailedExercisesDialog(
-                                context,
-                                student['name'],
-                                student['failed_exercises'] ?? [],
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+          // --- LLAMADA AL NUEVO COMPONENTE TABLA MODULARIZADO ---
+          StudentsRankingTable(students: students),
         ],
       ),
     );
