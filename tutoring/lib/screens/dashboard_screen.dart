@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tutoring/widgets/experience_pie_chart.dart';
 import 'package:tutoring/widgets/group_performance_chart.dart';
 import '../providers/tutor_auth_provider.dart';
 import '../providers/tutor_data_provider.dart';
@@ -291,11 +292,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // --- NUEVA SECCIÓN DE ANALÍTICA GRUPAL ---
-          GroupPerformanceChart(students: students),
+          // --- NUEVA SECCIÓN DE ANALÍTICA GRUPAL LADO A LADO ---
+          if (students.length >= 2) ...[
+            Row(
+              children: [
+                // Gráfico 1: Barras (IA)
+                Expanded(child: GroupPerformanceChart(students: students)),
 
-          if (students.length >= 2) const SizedBox(height: 32),
+                const SizedBox(width: 24), // Separación entre gráficos
+                // Gráfico 2: Pastel (XP)
+                Expanded(child: ExperiencePieChart(students: students)),
+              ],
+            ),
+            const SizedBox(height: 32),
+          ],
 
+          // -----------------------------------------------------
           const Text(
             'Detalle por Estudiante',
             style: TextStyle(
