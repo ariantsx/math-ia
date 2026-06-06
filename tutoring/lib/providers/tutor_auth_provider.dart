@@ -66,6 +66,51 @@ class TutorAuthProvider with ChangeNotifier {
     }
   }
 
+  // Paso 1: Enviar correo para solicitar código
+  Future<bool> sendRecoveryCode(String email) async {
+    try {
+      final url = Uri.parse('$baseUrl/tutor/forgot-password');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      print('Error solicitando código: $e');
+      return false;
+    }
+  }
+
+  // Paso 2: Enviar código y nueva contraseña para el cambio real
+  Future<String?> resetPassword(
+    String email,
+    String code,
+    String newPassword,
+  ) async {
+    try {
+      final url = Uri.parse('$baseUrl/tutor/reset-password');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'code': code,
+          'new_password': newPassword,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return null; // Éxito
+      } else {
+        return data['detail'] ?? 'Error al restaurar la contraseña';
+      }
+    } catch (e) {
+      return 'Error de conexión con el servidor.';
+    }
+  }
+
   void logout() {
     _tutorId = null;
     _tutorName = null;

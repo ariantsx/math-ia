@@ -200,7 +200,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // --- NAVEGACIÓN DE VUELTA AL LOGIN ---
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('¿Ya tienes cuenta? Inicia sesión aquí.'),
+                  child: const Text(
+                    '¿Ya tienes cuenta? Inicia sesión aquí.',
+                    style: TextStyle(
+                      color: Colors.blue, // Azul MathIA resaltado
+                      fontSize: 14,
+                      fontWeight: FontWeight
+                          .bold, // Negrita para darle intención de clic
+                    ),
+                  ),
                 ),
               ],
             ),

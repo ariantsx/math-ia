@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tutoring/screens/forgot_password_screen.dart';
 import 'package:tutoring/screens/register_screen.dart';
 import 'providers/tutor_auth_provider.dart';
 import 'providers/tutor_data_provider.dart'; // <-- NUEVO
@@ -33,7 +34,9 @@ class MathIATutorApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/login': (context) => LoginScreen(),
-        '/register': (context) => RegisterScreen(), // <-- Nueva ruta
+        '/register': (context) => RegisterScreen(),
+        '/forgot-password': (context) =>
+            ForgotPasswordScreen(), // <-- REGISTRADA
         '/dashboard': (context) => DashboardScreen(),
       },
     );

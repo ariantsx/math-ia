@@ -66,16 +66,18 @@ class User(Base):
     # Relación inversa (Opcional, pero útil si el alumno quiere ver quién lo supervisa)
     tutors = relationship("Tutor", secondary=tutor_student_association, back_populates="students")
 
-# --- NUEVA TABLA DE TUTORES ---
 class Tutor(Base):
-    __tablename__ = "tutors"
+    __tablename__ = "tutors" 
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     email = Column(String, unique=True, index=True)
     password = Column(String)
     
-    # NUEVO: Relación SQL pura. ¡Magia de SQLAlchemy!
+    # NUEVOS CAMPOS PARA RECUPERACIÓN DE CONTRASEÑA
+    recovery_code = Column(String(6), nullable=True, index=True)
+    recovery_code_expires_at = Column(DateTime, nullable=True)
+    
     students = relationship("User", secondary=tutor_student_association, back_populates="tutors")
 
 # --- NUEVA TABLA: Banco de Preguntas ---

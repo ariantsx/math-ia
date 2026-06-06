@@ -111,6 +111,14 @@ class UnlinkStudentRequest(BaseModel):
     tutor_id: int
     student_id: int
 
+class TutorForgotPasswordRequest(BaseModel):
+    email: str
+
+class TutorResetPasswordRequest(BaseModel):
+    email: str
+    code: str
+    new_password: str
+
 # 2. Creamos la ruta (endpoint) para el login
 @app.post("/api/login")
 async def login(user_data: LoginData, db: Session = Depends(get_db)):
@@ -690,6 +698,59 @@ def unlink_student_from_tutor(req: UnlinkStudentRequest, db: Session = Depends(g
     db.commit()
     
     return {"status": "success", "message": f"Estudiante {student.name} desvinculado correctamente"}
+
+# 1. Solicitar Código de Recuperación
+@app.post("/api/tutor/forgot-password")
+def tutor_forgot_password(req: TutorForgotPasswordRequest, db: Session = Depends(get_db)):
+    tutor = db.query(models.Tutor).filter(models.Tutor.email == req.email.strip().lower()).first()
+    if not tutor:
+        # Por seguridad en login/recuperación, es mejor decir que si el correo existe se envió el código
+        return {"status": "success", "message": "Si el correo está registrado, se ha enviado un código."}
+        
+    # Generar un código numérico de 6 dígitos
+    code = ''.join(random.choices(string.digits, k=6))
+    
+    # Guardar en la base de datos con expiración de 15 minutos
+    tutor.recovery_code = code
+    tutor.recovery_code_expires_at = datetime.utcnow() + timedelta(minutes=15)
+    db.commit()
+    
+    # SIMULACIÓN DE ENVÍO DE EMAIL (Aparecerá en tu terminal de Uvicorn)
+    print("\n" + "="*50)
+    print(f"📧 [EMAIL SIMULADO] Para: {tutor.email}")
+    print(f"🔑 Tu código de recuperación de MathIA es: {code}")
+    print("="*50 + "\n")
+    
+    return {"status": "success", "message": "Código generado correctamente."}
+
+# 2. Verificar Código y Cambiar Contraseña
+@app.post("/api/tutor/reset-password")
+def tutor_reset_password(req: TutorResetPasswordRequest, db: Session = Depends(get_db)):
+    tutor = db.query(models.Tutor).filter(models.Tutor.email == req.email.strip().lower()).first()
+    if not tutor or not tutor.recovery_code:
+        raise HTTPException(status_code=400, detail="Petición inválida o código no solicitado.")
+        
+    # Verificar si el código coincide
+    if tutor.recovery_code != req.code.strip():
+        raise HTTPException(status_code=400, detail="El código de verificación es incorrecto.")
+        
+    # Verificar si el código ya expiró
+    if tutor.recovery_code_expires_at < datetime.utcnow():
+        tutor.recovery_code = None
+        tutor.recovery_code_expires_at = None
+        db.commit()
+        raise HTTPException(status_code=400, detail="El código ha expirado. Solicita uno nuevo.")
+        
+    # Encriptar la nueva contraseña usando el security.py de tus usuarios principales
+    hashed_password = get_password_hash(req.new_password)
+    
+    # Actualizar datos y limpiar el código de recuperación
+    tutor.password = hashed_password
+    tutor.recovery_code = None
+    tutor.recovery_code_expires_at = None
+    db.commit()
+    
+    return {"status": "success", "message": "Contraseña actualizada correctamente."}
 
 # Este bloque es para poder ejecutar el archivo directamente
 if __name__ == "__main__":

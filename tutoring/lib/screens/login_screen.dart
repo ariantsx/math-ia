@@ -49,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(15),
             boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
           ),
+          // ... dentro de lib/screens/login_screen.dart -> build -> Container ...
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -59,6 +60,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 32),
+
+              // Campo: Correo
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(
@@ -68,6 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+
+              // Campo: Contraseña
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -77,7 +82,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   prefixIcon: Icon(Icons.lock),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(
+                height: 24,
+              ), // Quitamos el Align que tiraba el texto a la derecha
+              // Botón Principal: Ingresar
               SizedBox(
                 width: double.infinity,
                 height: 45,
@@ -92,17 +100,34 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                 ),
               ),
-              // ... código existente del botón de Login ...
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                // ...
+              const SizedBox(
+                height: 24,
+              ), // Espacio de separación antes de los enlaces
+              // 1. Enlace: ¿Olvidaste tu contraseña? (Centrado y tono medio Gris)
+              TextButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, '/forgot-password'),
+                child: Text(
+                  '¿Olvidaste tu contraseña?',
+                  style: TextStyle(
+                    color: Colors.grey.shade600, // Tono medio gris impecable
+                    fontSize: 14,
+                  ),
+                ),
               ),
-              // <-- AÑADE ESTO DEBAJO DEL BOTÓN DE LOGIN -->
-              const SizedBox(height: 16),
+              const SizedBox(height: 8), // Separación corta entre enlaces
+              // 2. Enlace: Registrarse (Centrado y color Azul)
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, '/register'),
-                child: const Text('¿No tienes cuenta? Regístrate como Tutor.'),
+                child: const Text(
+                  '¿No tienes cuenta? Regístrate como Tutor.',
+                  style: TextStyle(
+                    color: Colors.blue, // Azul MathIA resaltado
+                    fontSize: 14,
+                    fontWeight:
+                        FontWeight.bold, // Negrita para darle intención de clic
+                  ),
+                ),
               ),
             ],
           ),
