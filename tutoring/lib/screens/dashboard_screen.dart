@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tutoring/widgets/group_performance_chart.dart';
 import '../providers/tutor_auth_provider.dart';
 import '../providers/tutor_data_provider.dart';
 
@@ -287,132 +288,156 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent:
-              400, // Hace que las tarjetas se adapten al tamaño del monitor
-          childAspectRatio: 1.2,
-          crossAxisSpacing: 20,
-          mainAxisSpacing: 20,
-        ),
-        itemCount: students.length,
-        itemBuilder: (context, index) {
-          final student = students[index];
-          return Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // --- NUEVA SECCIÓN DE ANALÍTICA GRUPAL ---
+          GroupPerformanceChart(students: students),
+
+          if (students.length >= 2) const SizedBox(height: 32),
+
+          const Text(
+            'Detalle por Estudiante',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // --- CABECERA ACTUALIZADA CON BOTÓN DE ELIMINAR ---
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Bloque de información (Avatar + Nombre + Correo)
-                      Expanded(
-                        child: Row(
+          ),
+          const SizedBox(height: 16),
+          // ----------------------------------------
+
+          // --- EL GRIDVIEW ORIGINAL AHORA ENVUELTO EN EXPANDED ---
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 400,
+                childAspectRatio: 1.1, // Mantén el ratio que arreglamos antes
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
+              ),
+              itemCount: students.length,
+              itemBuilder: (context, index) {
+                final student = students[index];
+                return Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // --- CABECERA ACTUALIZADA CON BOTÓN DE ELIMINAR ---
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CircleAvatar(
-                              radius: 24,
-                              backgroundColor: Colors.blue.shade100,
-                              child: const Icon(
-                                Icons.person,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
+                            // Bloque de información (Avatar + Nombre + Correo)
                             Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Row(
                                 children: [
-                                  Text(
-                                    student['name'],
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
+                                  CircleAvatar(
+                                    radius: 24,
+                                    backgroundColor: Colors.blue.shade100,
+                                    child: const Icon(
+                                      Icons.person,
+                                      color: Colors.blue,
                                     ),
-                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    student['email'],
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black54,
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          student['name'],
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          student['email'],
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black54,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
                                     ),
-                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
                             ),
+
+                            // NUEVO: BOTÓN DE DESVINCULACIÓN CON CONFIRMACIÓN
+                            IconButton(
+                              icon: const Icon(
+                                Icons.person_remove_alt_1,
+                                color: Colors.redAccent,
+                              ),
+                              tooltip: 'Desvincular Estudiante',
+                              onPressed: () => _showUnlinkConfirmation(
+                                context,
+                                tutorId,
+                                student['id'],
+                                student['name'],
+                              ),
+                            ),
                           ],
                         ),
-                      ),
+                        const Divider(height: 30),
 
-                      // NUEVO: BOTÓN DE DESVINCULACIÓN CON CONFIRMACIÓN
-                      IconButton(
-                        icon: const Icon(
-                          Icons.person_remove_alt_1,
-                          color: Colors.redAccent,
+                        // Nivel de la Inteligencia Artificial
+                        _buildStatRow(
+                          Icons.psychology,
+                          'Nivel Adaptativo (IA)',
+                          'Nivel ${student['skill_level']} / 10',
+                          Colors.purple,
                         ),
-                        tooltip: 'Desvincular Estudiante',
-                        onPressed: () => _showUnlinkConfirmation(
-                          context,
-                          tutorId,
-                          student['id'],
-                          student['name'],
+                        const SizedBox(height: 10),
+
+                        // Puntos de Experiencia
+                        _buildStatRow(
+                          Icons.star,
+                          'Experiencia',
+                          '${student['exp']} XP',
+                          Colors.orange,
                         ),
-                      ),
-                    ],
-                  ),
-                  const Divider(height: 30),
+                        const SizedBox(height: 10),
 
-                  // Nivel de la Inteligencia Artificial
-                  _buildStatRow(
-                    Icons.psychology,
-                    'Nivel Adaptativo (IA)',
-                    'Nivel ${student['skill_level']} / 10',
-                    Colors.purple,
-                  ),
-                  const SizedBox(height: 10),
+                        // NUEVO: Nota del Último Examen
+                        _buildStatRow(
+                          Icons.assignment_turned_in,
+                          'Último Examen',
+                          '${student['last_exam_score']}',
+                          student['last_exam_score'] == 'Sin intentos'
+                              ? Colors.grey
+                              : Colors.redAccent,
+                        ),
+                        const SizedBox(height: 10),
 
-                  // Puntos de Experiencia
-                  _buildStatRow(
-                    Icons.star,
-                    'Experiencia',
-                    '${student['exp']} XP',
-                    Colors.orange,
+                        // NUEVO: Mundos Completados
+                        _buildStatRow(
+                          Icons.public,
+                          'Mundos Completados',
+                          '${student['worlds_completed']} / 6',
+                          Colors.teal,
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 10),
-
-                  // NUEVO: Nota del Último Examen
-                  _buildStatRow(
-                    Icons.assignment_turned_in,
-                    'Último Examen',
-                    '${student['last_exam_score']}',
-                    student['last_exam_score'] == 'Sin intentos'
-                        ? Colors.grey
-                        : Colors.redAccent,
-                  ),
-                  const SizedBox(height: 10),
-
-                  // NUEVO: Mundos Completados
-                  _buildStatRow(
-                    Icons.public,
-                    'Mundos Completados',
-                    '${student['worlds_completed']} / 6',
-                    Colors.teal,
-                  ),
-                ],
-              ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
