@@ -888,7 +888,7 @@ class World1Lessons {
     ),
     LessonSlide(
       type: SlideType.quizSummary,
-      title: '¡JEFE FINAL!',
+      title: 'Cuestionario de Jerarquías',
       content:
           'Si pasas esta prueba, habrás conquistado el Reino Numérico por completo. ¡Mucha suerte!',
       icon: Icons.workspace_premium,
