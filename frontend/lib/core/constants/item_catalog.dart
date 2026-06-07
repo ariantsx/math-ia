@@ -15,6 +15,20 @@ class ItemCatalog {
         'iconPath': 'assets/images/icons/icon_hat_2.png',
         'price': 350,
       },
+      {
+        'id': 'h3',
+        'name': 'Sombrero de Paja',
+        'imagePath': 'assets/images/sprites/hat_3.png',
+        'iconPath': 'assets/images/icons/icon_hat_3.png',
+        'price': 240,
+      },
+      {
+        'id': 'h4',
+        'name': 'Sombrero de Capitán',
+        'imagePath': 'assets/images/sprites/hat_4.png',
+        'iconPath': 'assets/images/icons/icon_hat_4.png',
+        'price': 500,
+      },
     ],
     'glasses': [
       {
@@ -31,6 +45,20 @@ class ItemCatalog {
         'iconPath': 'assets/images/icons/icon_glass_2.png',
         'price': 400,
       },
+      {
+        'id': 'g3',
+        'name': 'Gafas de Sol',
+        'imagePath': 'assets/images/sprites/glass_3.png',
+        'iconPath': 'assets/images/icons/icon_glass_3.png',
+        'price': 100,
+      },
+      {
+        'id': 'g4',
+        'name': 'Lentes Futuristas',
+        'imagePath': 'assets/images/sprites/glass_4.png',
+        'iconPath': 'assets/images/icons/icon_glass_4.png',
+        'price': 750,
+      },
     ],
     'shirts': [
       {
@@ -46,6 +74,13 @@ class ItemCatalog {
         'imagePath': 'assets/images/sprites/shirt_2.png',
         'iconPath': 'assets/images/icons/icon_shirt_2.png',
         'price': 600,
+      },
+      {
+        'id': 's3',
+        'name': 'Polo de Creeper',
+        'imagePath': 'assets/images/sprites/shirt_3.png',
+        'iconPath': 'assets/images/icons/icon_shirt_3.png',
+        'price': 200,
       },
     ],
   };
