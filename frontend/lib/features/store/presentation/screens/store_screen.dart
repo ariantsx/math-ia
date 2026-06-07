@@ -132,8 +132,8 @@ class StoreScreen extends StatelessWidget {
             children: [
               Image.asset(
                 item['iconPath'],
-                height: 60, // Le damos un alto fijo para que no se deforme
-                width: 60,
+                height: 100, // Le damos un alto fijo para que no se deforme
+                width: 100,
                 fit: BoxFit
                     .contain, // Asegura que la imagen mantenga su proporción
               ),
