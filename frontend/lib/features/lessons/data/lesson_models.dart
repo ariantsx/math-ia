@@ -16,6 +16,9 @@ class LessonSlide {
   final String? lottieUrl; // <-- NUEVO: Para animaciones Lottie
   final String? conceptTag; // <-- NUEVO: Etiqueta del tema
 
+  // --- NUEVO: Atributo para guardar la dificultad de la IA ---
+  final int? difficulty;
+
   LessonSlide({
     required this.type,
     required this.title,
@@ -25,7 +28,8 @@ class LessonSlide {
     this.feedback,
     this.imagePath,
     this.icon,
-    this.lottieUrl, // <-- Lo añadimos al constructor
-    this.conceptTag, // <-- NUEVO
+    this.lottieUrl,
+    this.conceptTag,
+    this.difficulty,
   });
 }

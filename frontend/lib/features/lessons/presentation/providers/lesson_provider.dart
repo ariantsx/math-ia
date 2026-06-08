@@ -203,6 +203,8 @@ class LessonProvider extends ChangeNotifier {
           correctAnswerIndex: exerciseJson['correct_answer_index'],
           feedback: exerciseJson['feedback'],
           conceptTag: targetConcept,
+          difficulty:
+              exerciseJson['difficulty'], // <--- AQUÍ CAPTURAS LA DIFICULTAD DE PYTHON
         );
 
         // --- GUARDAMOS EL EJERCICIO EN EL CACHÉ POR SI EL USUARIO RETROCEDE ---
@@ -236,12 +238,17 @@ class LessonProvider extends ChangeNotifier {
       if (!_hasAnswered) {
         if (_selectedAnswer == null) return;
 
+        int slideDifficulty =
+            currentSlide.difficulty ?? userProvider.skillLevel;
+
         if (_selectedAnswer == currentSlide.correctAnswerIndex) {
+          // Si el slide no tiene dificultad (por ser fijo de teoría), asumimos el nivel actual
+
           _isCorrect = true;
           userProvider.addCoins(5);
 
-          // --- REFUERZO POSITIVO: Sube el nivel ---
-          userProvider.updateSkillLevel(true);
+          // --- NUEVO: Pasamos "true" y la dificultad de la pregunta ---
+          userProvider.updateSkillLevel(true, slideDifficulty);
 
           _completedExercises.add(_currentIndex);
 
@@ -269,8 +276,8 @@ class LessonProvider extends ChangeNotifier {
           _isCorrect = false;
           userProvider.deductLife();
 
-          // --- REFUERZO NEGATIVO: Baja el nivel para que la IA le dé algo más fácil ---
-          userProvider.updateSkillLevel(false);
+          // --- NUEVO: Pasamos "false" y la dificultad de la pregunta ---
+          userProvider.updateSkillLevel(false, slideDifficulty);
 
           // --- NUEVO: REGISTRAMOS EL ERROR EN EL HISTORIAL PARA EL TUTOR ---
           userProvider.addFailedExercise(

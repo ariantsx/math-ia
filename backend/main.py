@@ -420,9 +420,16 @@ async def get_next_dynamic_exercise(req: NextExerciseRequest, db: Session = Depe
 
     # 2. DECISIÓN DE LA IA: ¿Explotar o Explorar?
     if random.random() < epsilon:
-        # FASE DE EXPLORACIÓN: Lanzamos un reto ligeramente superior a su nivel
-        target_difficulty = min(10, target_difficulty + random.randint(1, 2))
+        # Decidimos aleatoriamente si exploramos hacia arriba o hacia abajo
         is_epic_quest = True
+        explorar_arriba = random.choice([True, False])
+        
+        if explorar_arriba:
+            # Exploración hacia arriba: Le lanzamos un reto
+            target_difficulty = min(10, target_difficulty + random.randint(1, 2))
+        else:
+            # Exploración hacia abajo: Le lanzamos una auditoría de bases
+            target_difficulty = max(1, target_difficulty - random.randint(1, 2))
     else:
         # FASE DE EXPLOTACIÓN: Mantenemos su nivel para reforzar confianza
         pass 
@@ -439,9 +446,11 @@ async def get_next_dynamic_exercise(req: NextExerciseRequest, db: Session = Depe
     if not query:
         raise HTTPException(status_code=404, detail="No hay ejercicios registrados para este nivel.")
 
+    exercises = query.all()
+
     # 4. FILTRO DE MEMORIA: Excluimos lo que ya resolvió en esta sesión
     if req.exclude_ids and len(req.exclude_ids) > 0:
-        exercises = query.filter(models.Exercise.id.notin_(req.exclude_ids))
+        exercises = query.filter(models.Exercise.id.notin_(req.exclude_ids)).all()
 
     # Plan B: Si el usuario resolvió TODOS los ejercicios de esa dificultad, traemos cualquiera que ya haya visto
     if not exercises:

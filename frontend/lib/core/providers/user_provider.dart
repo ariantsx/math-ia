@@ -359,19 +359,40 @@ class UserProvider extends ChangeNotifier {
     return _savedDynamicExercises[exerciseKey];
   }
 
-  // --- REFUERZO DE IA ---
-  Future<void> updateSkillLevel(bool isCorrect) async {
+  // --- ACTUALIZACIÓN DINÁMICA DEL NIVEL (ALGORITMO ELO / EPSILON-GREEDY) ---
+  void updateSkillLevel(bool isCorrect, int questionDifficulty) {
+    // Calculamos la diferencia de nivel
+    int levelDifference = questionDifficulty - _skillLevel;
+
     if (isCorrect) {
-      // Recompensa: Sube la dificultad si acertó (Máximo 10)
-      if (_skillLevel < 10) {
-        _skillLevel++;
+      if (levelDifference > 0) {
+        // Exploración hacia arriba: Acertó una pregunta más difícil que su nivel
+        _skillLevel += 2; // Premio doble
+      } else if (levelDifference == 0) {
+        // Explotación: Acertó una pregunta de su mismo nivel
+        _skillLevel += 1; // Premio normal
+      } else {
+        // Exploración hacia abajo: Acertó una pregunta muy fácil
+        _skillLevel += 0; // Sin premio, era de esperarse
       }
     } else {
-      // Castigo/Ajuste: Baja la dificultad si se equivocó (Mínimo 1)
-      if (_skillLevel > 1) {
-        _skillLevel--;
+      // Si falló
+      if (levelDifference > 0) {
+        // Exploración hacia arriba: Falló una pregunta muy difícil
+        _skillLevel -= 0; // Sin castigo, estábamos probando sus límites
+      } else if (levelDifference == 0) {
+        // Explotación: Falló una pregunta de su nivel
+        _skillLevel -= 1; // Castigo normal
+      } else {
+        // Exploración hacia abajo: Falló una pregunta muy fácil
+        _skillLevel -= 2; // Castigo doble, olvidó las bases
       }
     }
+
+    // Aseguramos que el nivel nunca baje de 1 ni suba al infinito (Ej. máximo nivel 10)
+    if (_skillLevel < 1) _skillLevel = 1;
+    if (_skillLevel > 10)
+      _skillLevel = 10; // Ajusta este máximo según tu lógica
 
     notifyListeners();
     _syncWithBackend();
