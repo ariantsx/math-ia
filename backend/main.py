@@ -409,35 +409,6 @@ async def save_exam(user_id: int, request: ExamSaveRequest, db: Session = Depend
     db.commit()
     return {"success": True, "message": "Resultado guardado correctamente"}
 
-# --- 3. RUTA DE AYUDA PARA LLENAR TU BASE DE DATOS RÁPIDO ---
-@app.post("/api/seed-questions")
-async def seed_questions(db: Session = Depends(get_db)):
-    # Si ya hay preguntas, no hacemos nada
-    if db.query(models.Question).first():
-        return {"message": "Ya hay preguntas en la base de datos"}
-        
-    preguntas_ejemplo = [
-        models.Question(text="¿Cuánto es el 20% de 150?", options=["20", "30", "40", "50"], correct_answer_index=1),
-        models.Question(text="¿Cuál es el MCM de 4 y 6?", options=["10", "12", "24", "8"], correct_answer_index=1),
-        models.Question(text="Resuelve: 5 + 3 x 2", options=["16", "11", "10", "8"], correct_answer_index=1),
-        # ... la idea es que tú luego agregues más desde pgAdmin ...
-    ]
-    
-    # Agregamos 20 preguntas generadas automáticamente como relleno
-    import random
-    for _ in range(25):
-        a = random.randint(2, 12)
-        b = random.randint(2, 12)
-        ans = a * b
-        opts = [str(ans), str(ans+1), str(ans-2), str(ans+10)]
-        random.shuffle(opts)
-        idx = opts.index(str(ans))
-        preguntas_ejemplo.append(models.Question(text=f"¿Cuánto es {a} x {b}?", options=opts, correct_answer_index=idx))
-        
-    db.add_all(preguntas_ejemplo)
-    db.commit()
-    return {"message": "Banco de preguntas poblado con éxito"}
-
 # --- SISTEMA DE APRENDIZAJE POR REFUERZO (IA) ---
 @app.post("/api/exercises/next")
 async def get_next_dynamic_exercise(req: NextExerciseRequest, db: Session = Depends(get_db)):
@@ -459,37 +430,22 @@ async def get_next_dynamic_exercise(req: NextExerciseRequest, db: Session = Depe
     # 3. CONSTRUCCIÓN DE LA BÚSQUEDA EN BASE DE DATOS
     query = db.query(models.Exercise).filter(
         models.Exercise.world_id == req.world_id,
-        models.Exercise.level_index == req.level_index
+        models.Exercise.level_index == req.level_index,
+        models.Exercise.concept_tag == req.target_concept,
+        models.Exercise.base_difficulty == target_difficulty
     )
 
-    # <-- NUEVO FILTRO EXACTO -->
-    if req.target_concept:
-        query = query.filter(models.Exercise.concept_tag == req.target_concept)
+    # ESCUDO ANTI-CRASH: Si la tabla está literalmente vacía para este nivel
+    if not query:
+        raise HTTPException(status_code=404, detail="No hay ejercicios registrados para este nivel.")
 
     # 4. FILTRO DE MEMORIA: Excluimos lo que ya resolvió en esta sesión
     if req.exclude_ids and len(req.exclude_ids) > 0:
-        query = query.filter(models.Exercise.id.notin_(req.exclude_ids))
+        exercises = query.filter(models.Exercise.id.notin_(req.exclude_ids))
 
-    # Buscamos los que encajen con la dificultad decidida por la IA
-    exercises = query.filter(models.Exercise.base_difficulty == target_difficulty).all()
-
-    # --- SISTEMA DE RESPALDO (FALLBACKS) ---
-    
-    # Plan B: Si no hay ejercicios exactos de esa dificultad, traemos cualquiera que NO haya visto
+    # Plan B: Si el usuario resolvió TODOS los ejercicios de esa dificultad, traemos cualquiera que ya haya visto
     if not exercises:
         exercises = query.all()
-        is_epic_quest = False # Apagamos el aviso de "Reto" porque la dificultad ya no es exacta
-
-    # Plan C: Si ya resolvió TODOS los del nivel, ignoramos la memoria y le repetimos uno
-    if not exercises:
-        exercises = db.query(models.Exercise).filter(
-            models.Exercise.world_id == req.world_id,
-            models.Exercise.level_index == req.level_index
-        ).all()
-
-    # ESCUDO ANTI-CRASH: Si la tabla está literalmente vacía para este nivel
-    if not exercises:
-        raise HTTPException(status_code=404, detail="No hay ejercicios registrados para este nivel.")
 
     # 5. SELECCIÓN FINAL Y RESPUESTA
     chosen = random.choice(exercises)
