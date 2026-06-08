@@ -49,6 +49,9 @@ class ExamsProvider extends ChangeNotifier {
   int get timeLeft => _timeLeft;
   bool get isLoading => _isLoading;
 
+  bool _hasCompletedExamLocally = false;
+  bool get hasCompletedExamLocally => _hasCompletedExamLocally;
+
   String _calculateGrade(int score) {
     if (score >= 18) return 'AD';
     if (score >= 14) return 'A';
@@ -151,6 +154,9 @@ class ExamsProvider extends ChangeNotifier {
     );
 
     _currentState = ExamState.summary;
+    _hasCompletedExamLocally =
+        true; // <--- Bloqueamos el examen para esta sesión
+
     notifyListeners();
 
     // Guardar en la base de datos silenciosamente
@@ -208,6 +214,7 @@ class ExamsProvider extends ChangeNotifier {
     _timeLeft = 30;
     lastResult = null;
     _isLoading = false;
+    _hasCompletedExamLocally = false;
 
     notifyListeners();
   }

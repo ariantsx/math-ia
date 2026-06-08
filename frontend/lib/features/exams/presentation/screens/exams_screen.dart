@@ -83,35 +83,56 @@ class ExamsScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            const SizedBox(height: 40),
-
-            // Botón Principal
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: provider.isLoading
-                    ? null
-                    : () => provider.startExam(userId),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-                child: provider.isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'EMPEZAR EXAMEN',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
+            const SizedBox(height: 32),
+            // --- NUEVO: Control Antifraude de Intento Único ---
+            userProvider.examHistory.isNotEmpty ||
+                    provider.hasCompletedExamLocally
+                ? Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.green.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.verified_user, color: Colors.green.shade700),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Text(
+                            'Ya has rendido este examen. Tu calificación está guardada en tu perfil y el tutor ya puede auditarla.',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
+                      ],
+                    ),
+                  )
+                : ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 48,
+                        vertical: 16,
                       ),
-              ),
-            ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                    ),
+                    onPressed: () => provider.startExam(userId),
+                    child: const Text(
+                      'Comenzar Examen',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
             const SizedBox(height: 24),
 
             // TARJETA CELESTE UNIFICADA
@@ -324,8 +345,8 @@ class ExamsScreen extends StatelessWidget {
             children: [
               OutlinedButton.icon(
                 onPressed: () => provider.changeState(ExamState.intro),
-                icon: const Icon(Icons.refresh),
-                label: const Text('Intentar Nuevo'),
+                icon: const Icon(Icons.home),
+                label: const Text('Finalizar'),
               ),
               const SizedBox(width: 16),
               ElevatedButton.icon(
