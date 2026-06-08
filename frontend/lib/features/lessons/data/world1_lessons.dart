@@ -39,7 +39,7 @@ class World1Lessons {
       title: 'Cantidad y Orden',
       content:
           'Los Naturales (N) empiezan en 1 hacia el infinito: {1, 2, 3...}.\n\nTienen dos grandes usos:\n1. Cardinales: Sirven para decir "cuántos" hay. (Ej: 3 manzanas, 15 años).\n2. Ordinales: Sirven para decir "en qué posición" están. (Ej: 1er lugar, 4to piso).',
-      icon: Icons.format_list_numbered,
+      lottieUrl: 'assets/lottie/numeros_rotando.json',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -55,21 +55,21 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           '¡Exacto! Al hablar de posiciones (1ro, 2do, 3ro) usamos los números de forma Ordinal.',
-      conceptTag: 'ordinal', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'ordinal',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'El Misterio del Cero',
       content:
           '¿El Cero (0) es un número natural?\n\nDepende a quién le preguntes. Muchos matemáticos no lo incluyen porque en la naturaleza no señalas algo diciendo "mira, ahí hay cero árboles". Por convención, para contar, empezamos desde el 1.',
-      icon: Icons.exposure_zero,
+      lottieUrl: 'assets/lottie/cero.json',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Antecesor y Sucesor',
       content:
           'Otra magia de los Naturales es que siempre tienen un vecino.\n\n- Sucesor: El número que sigue (le sumas 1). El sucesor de 5 es 6.\n- Antecesor: El número que está antes (le restas 1). El antecesor de 5 es 4.',
-      icon: Icons.compare_arrows,
+      lottieUrl: 'assets/lottie/recta_numerica.json',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -78,7 +78,7 @@ class World1Lessons {
       options: ['998', '100', '1000', '1001'],
       correctAnswerIndex: 2,
       feedback: 'El sucesor se halla sumando 1. 999 + 1 = 1000.',
-      conceptTag: 'sucesor', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'sucesor',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -88,14 +88,14 @@ class World1Lessons {
       correctAnswerIndex: 3,
       feedback:
           '¡Cuidado con la trampa! Como los números naturales empiezan en el 1, el 1 es el único que no tiene un antecesor dentro de su propia familia.',
-      conceptTag: 'antecesor', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'antecesor',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Lo que NO son Naturales',
       content:
           'No puedes tener "media oveja" ni puedes contar "-3 árboles".\n\nPor lo tanto, los números con punto decimal (2.5) o con signos negativos (-4) NUNCA son Números Naturales.',
-      icon: Icons.block,
+      lottieUrl: 'assets/lottie/ovejas.json',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -106,7 +106,7 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'No existe tal cosa como "32 alumnos y medio". Para contar objetos reales indivisibles usamos siempre números naturales (enteros positivos).',
-      conceptTag: 'identificacion', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'identificacion',
     ),
     LessonSlide(
       type: SlideType.quizSummary,
@@ -123,7 +123,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'Los naturales son enteros positivos que usamos para contar, desde el 1 al infinito.',
-      conceptTag: 'conjunto_naturales', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'conjunto_naturales',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -134,7 +134,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'Las edades completas se cuentan en cantidades enteras y positivas.',
-      conceptTag: 'uso_naturales', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'uso_naturales',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -149,7 +149,7 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'Los números negativos no pertenecen a los naturales porque no puedes "contar" objetos en negativo en el mundo real.',
-      conceptTag: 'identificacion', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'identificacion',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -159,7 +159,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'Sumar 1 a cualquier número natural te da como resultado su sucesor (6).',
-      conceptTag: 'sucesor', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'sucesor',
     ),
   ];
 
@@ -172,14 +172,14 @@ class World1Lessons {
       title: 'Números Enteros (Z)',
       content:
           '¡Las cosas se enfrían!\n\n¿Cómo representas una deuda de \$5? ¿O una temperatura de 10 grados bajo cero? Aquí nacen los Números Enteros.',
-      icon: Icons.ac_unit,
+      lottieUrl: 'assets/lottie/nieve.json',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'El Espejo Matemático',
       content:
           'Los Enteros (Z) incluyen a los Naturales, incluyen al Cero (0), pero añaden algo nuevo: El reflejo negativo (-1, -2, -3...).\n\nEn la vida real:\n(+) Positivo: Dinero a favor, subir pisos, sobre el nivel del mar.\n(-) Negativo: Deudas, bajar al sótano, profundidad del mar.',
-      icon: Icons.import_export,
+      lottieUrl: 'assets/lottie/reflejo_circulos.json',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -190,21 +190,21 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'Al bajar del cero, entramos al territorio de los números negativos. Llegaste al -3.',
-      conceptTag: 'uso_enteros', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'uso_enteros',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'La Recta Numérica',
       content:
           'Imagina una línea horizontal.\n\nEn el centro exacto está el 0. Hacia la DERECHA avanzan los positivos. Hacia la IZQUIERDA avanzan los negativos.\n\nRegla de oro: Cualquier número que esté MÁS a la DERECHA siempre será MAYOR.',
-      icon: Icons.linear_scale,
+      imagePath: 'assets/images/lessons/numeros_enteros.jpg',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Distancias y Valor Absoluto',
       content:
           '¿A cuántos pasos del cero está el -4?\n\n¡A 4 pasos! A esto se le llama "Valor Absoluto". La distancia siempre es positiva, sin importar el signo. El valor absoluto de -4 se escribe |-4| y es simplemente 4.',
-      icon: Icons.route,
+      imagePath: 'assets/images/lessons/valor_absoluto.png',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -214,7 +214,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'El -2 está más a la derecha (más cerca del cero) que los demás. Piensa en dinero: Deber \$2 es mucho mejor (mayor) que deber \$100.',
-      conceptTag: 'recta_numerica', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'recta_numerica',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -225,14 +225,14 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'Las distancias nunca pueden ser negativas. El valor absoluto (la cantidad pura sin signo) de -15 es simplemente 15.',
-      conceptTag: 'valor_absoluto', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'valor_absoluto',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Desplazamientos',
       content:
           'Si te mueves por la recta:\nSumar es caminar hacia la derecha.\nRestar es caminar hacia la izquierda.\n\nSi estás en el -2 y sumas 5 pasos a la derecha, cruzarás el cero y llegarás al +3.',
-      icon: Icons.directions_walk,
+      imagePath: 'assets/images/lessons/numeros_enteros.jpg',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -243,7 +243,7 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'Estás en -3. Caminas 5 pasos a la derecha: -2, -1, 0, 1, 2. La nueva temperatura es 2°C positivos.',
-      conceptTag: 'temperatura', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'temperatura',
     ),
     LessonSlide(
       type: SlideType.quizSummary,
@@ -260,7 +260,7 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'La profundidad o todo lo que está por debajo del límite 0 es negativo (-).',
-      conceptTag: 'profundidad', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'profundidad',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -269,7 +269,7 @@ class World1Lessons {
       options: ['-15°C', '-5°C', 'Son igual de frías', 'Cero'],
       correctAnswerIndex: 1,
       feedback: '-5°C está más a la derecha en la recta numérica que -15°C.',
-      conceptTag: 'recta_numerica', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'recta_numerica',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -279,7 +279,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'El cero (0) y los negativos son enteros, pero no naturales (los naturales empiezan en 1).',
-      conceptTag: 'identificacion', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'identificacion',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -289,7 +289,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'El valor absoluto es la distancia al cero, siempre se expresa en positivo (99).',
-      conceptTag: 'valor_absoluto', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'valor_absoluto',
     ),
   ];
 
@@ -302,14 +302,14 @@ class World1Lessons {
       title: 'Racionales (Q)',
       content:
           '¡Hora de la pizza!\n\n¿Qué pasa si compartes una pizza con tus amigos? Ya no tienes "1 entera", tienes porciones. Aquí entran los Racionales, para representar pedazos.',
-      icon: Icons.local_pizza,
+      lottieUrl: 'assets/lottie/pizza.json',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Las Fracciones',
       content:
           'Un Racional (Q) es CUALQUIER número que se pueda escribir como fracción (a / b).\n\n- Numerador (arriba): Cuántos pedazos tomas.\n- Denominador (abajo): En cuántos pedazos iguales se cortó todo.',
-      icon: Icons.pie_chart,
+      lottieUrl: 'assets/lottie/pie_dinamico.json',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -320,14 +320,14 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'El total de cortes va abajo (8) y lo que tomas va arriba (3). La respuesta es 3/8.',
-      conceptTag: 'concepto_fraccion', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'concepto_fraccion',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Los Decimales',
       content:
           'Toda fracción es en realidad una división escondida.\nSi divides la fracción 1/2 (1 entre 2), el resultado es 0.5.\n\n¡Por lo tanto, todo decimal exacto es también un número racional disfrazado!',
-      icon: Icons.calculate,
+      imagePath: 'assets/images/lessons/decimales.jpg',
     ),
     LessonSlide(
       type: SlideType.teaching,
@@ -349,7 +349,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           '0.25 es el resultado de dividir 1/4. Todo decimal exacto es racional.',
-      conceptTag: 'decimales', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'decimales',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -360,14 +360,14 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'Nunca puedes dividir entre cero. (0/5 sí existe, da 0, pero 5/0 es indefinido).',
-      conceptTag: 'division_cero', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'division_cero',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'El truco de los Enteros',
       content:
           '¿El número entero 5 es racional?\n\n¡SÍ! Todo número entero o natural pertenece también a los Racionales. Para convertir un entero en fracción, solo ponle un "1" debajo. (Ej: 5 = 5/1).',
-      icon: Icons.swap_vert,
+      icon: Icons.percent,
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -378,7 +378,7 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'Cualquier entero se vuelve fracción poniéndole un 1 como denominador. -8 dividido entre 1 sigue siendo -8.',
-      conceptTag: 'enteros_racionales', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'enteros_racionales',
     ),
     LessonSlide(
       type: SlideType.quizSummary,
@@ -399,7 +399,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'El denominador (abajo) indica en cuántas partes iguales se dividió el entero.',
-      conceptTag: 'denominador', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'denominador',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -409,7 +409,7 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'Si simplificas (divides la mitad arriba y abajo), 2/4 es equivalente a 1/2 (0.5).',
-      conceptTag: 'equivalencia', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'equivalencia',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -419,7 +419,7 @@ class World1Lessons {
       correctAnswerIndex: 0,
       feedback:
           'Es verdadera. Todo entero se vuelve fracción agregándole un 1 abajo.',
-      conceptTag: 'enteros_racionales', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'enteros_racionales',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -428,7 +428,7 @@ class World1Lessons {
       options: ['1/3', '0.2', '2/1', '0.5'],
       correctAnswerIndex: 3,
       feedback: 'La mitad es 1/2, que en número decimal se escribe como 0.5.',
-      conceptTag: 'equivalencia_decimal', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'equivalencia_decimal',
     ),
   ];
 
@@ -441,14 +441,14 @@ class World1Lessons {
       title: 'Suma y Resta',
       content:
           'Ya conocemos a las familias de los números. ¡Ahora vamos a jugar con ellos en el campo de batalla! Empezaremos con las operaciones de juntar y quitar.',
-      icon: Icons.add_circle_outline,
+      icon: Icons.calculate,
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'La Batalla de Signos 1',
       content:
           'Regla #1: SIGNOS IGUALES SE SUMAN.\n\nSi dos números tienen el mismo signo, sus "ejércitos" se unen (sumas los números) y mantienen su bandera (el signo original).\nEj: 3 + 4 = 7\nEj: -2 - 3 = -5',
-      icon: Icons.group_add,
+      lottieUrl: 'assets/lottie/batalla.json',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -458,21 +458,21 @@ class World1Lessons {
       correctAnswerIndex: 0,
       feedback:
           'Al ser signos iguales (- y -), los números se suman (5+2=7) y se mantiene la bandera negativa (-7).',
-      conceptTag: 'suma_negativos', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'suma_negativos',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'La Batalla de Signos 2',
       content:
           'Regla #2: SIGNOS DIFERENTES SE RESTAN.\n\nSi chocan un positivo y un negativo, pelean (se restan). ¿Quién gana? Se pone el signo del número más grande.\nEj: -8 + 5 = -3 (Restamos, y como el 8 es mayor y es negativo, gana el menos).',
-      icon: Icons.sports_martial_arts,
+      lottieUrl: 'assets/lottie/versus.json',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'El truco del Banco',
       content:
           'Si te confundes con la resta, usa dinero:\n- Positivos (+) = Dinero en mi bolsillo.\n- Negativos (-) = Deudas.\n\nSi debo \$10 (-10) y pago con \$15 (+15), cubro la deuda y me sobran \$5 en mi bolsillo (+5).',
-      icon: Icons.account_balance_wallet,
+      lottieUrl: 'assets/lottie/banco.json',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -482,7 +482,7 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'Signos diferentes se restan (10 - 4 = 6). El mayor es 10 (negativo), así que el resultado hereda el signo (-6).',
-      conceptTag: 'resta_diferentes', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'resta_diferentes',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -493,14 +493,14 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'La operación es -15 + 10. Pagas 10 de tu deuda, pero sigues debiendo 5. El saldo es -5.',
-      conceptTag: 'cuenta_bancaria', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'cuenta_bancaria',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Choque de dos signos',
       content:
           'A veces verás dos signos pegados: Ej: 5 - (-2)\n\n¡Dos negativos pegados se convierten en un positivo!\nEs como decir "Le quito (-) una deuda (-)", lo cual es algo bueno (+).\n5 - (-2) se convierte en 5 + 2 = 7.',
-      icon: Icons.exposure_plus_1,
+      imagePath: 'assets/images/lessons/choque.jpg',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -510,7 +510,7 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'El menos y el menos pegados se transforman en más. La operación real es 10 + 5 = 15.',
-      conceptTag: 'doble_signo', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'doble_signo',
     ),
     LessonSlide(
       type: SlideType.quizSummary,
@@ -525,7 +525,7 @@ class World1Lessons {
       options: ['5', '-5', '35', '-35'],
       correctAnswerIndex: 1,
       feedback: 'Tienes 15 pero gastas 20. Quedas debiendo 5 (-5).',
-      conceptTag: 'resta_simple', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'resta_simple',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -534,7 +534,7 @@ class World1Lessons {
       options: ['-1', '1', '-15', '15'],
       correctAnswerIndex: 2,
       feedback: 'Signos iguales se suman y mantienen el signo: -15.',
-      conceptTag: 'signos_iguales', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'signos_iguales',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -544,7 +544,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'Signos diferentes se restan (12-3=9). El 12 es el mayor y es positivo.',
-      conceptTag: 'resta_positiva', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'resta_positiva',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -553,7 +553,7 @@ class World1Lessons {
       options: ['-8', '8', '0', '-16'],
       correctAnswerIndex: 2,
       feedback: '-(-4) se vuelve +4. Entonces, -4 + 4 se restan y da 0.',
-      conceptTag: 'doble_signo', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'doble_signo',
     ),
   ];
 
@@ -565,8 +565,8 @@ class World1Lessons {
       type: SlideType.intro,
       title: 'Multiplicación',
       content:
-          'La multiplicación es simplemente un atajo de la suma. En álgebra, lo único nuevo que debes aprender es qué pasa con los signos.',
-      icon: Icons.clear,
+          'La multiplicación es simplemente un atajo de la suma. En aritmética, lo único nuevo que debes aprender es qué pasa con los signos.',
+      imagePath: 'assets/images/lessons/multiplicacion.jpg',
     ),
     LessonSlide(
       type: SlideType.teaching,
@@ -583,7 +583,7 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'Números: 4x3=12. Signos: Menos por menos da más (+). Resultado 12.',
-      conceptTag: 'ley_signos_2', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'ley_signos_2',
     ),
     LessonSlide(
       type: SlideType.teaching,
@@ -597,7 +597,7 @@ class World1Lessons {
       title: 'Paréntesis en vez de "X"',
       content:
           'A medida que avanzas en mate, dejarás de ver el signo "X" para multiplicar, ya que se confunde con letras. Ahora se usan paréntesis juntos.\nEj: (5)(4) es igual a decir 5 x 4 = 20.',
-      icon: Icons.data_array,
+      imagePath: 'assets/images/lessons/parentesis.jpg',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -607,7 +607,7 @@ class World1Lessons {
       correctAnswerIndex: 0,
       feedback:
           'El 5 es positivo y el 6 negativo. Más por menos es menos. 5 x 6 = 30. Resultado: -30.',
-      conceptTag: 'ley_signos', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'ley_signos',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -617,14 +617,14 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'Paso a paso: (-1)x(-1) da +1. Luego, ese (+1) se multiplica por el último (-1), dando -1 final.',
-      conceptTag: 'triple_mult', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'triple_mult',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'El Cero Absorbente',
       content:
           'El cero es como un agujero negro en la multiplicación. No importa qué tan gigante o negativo sea el número, si lo multiplicas por 0, el resultado SIEMPRE será 0.',
-      icon: Icons.tonality,
+      lottieUrl: 'assets/lottie/cero.json',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -634,7 +634,7 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'Si hay un cero multiplicando en cualquier parte de la cadena, todo se vuelve cero instantáneamente.',
-      conceptTag: 'cadena_cero', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'cadena_cero',
     ),
     LessonSlide(
       type: SlideType.quizSummary,
@@ -650,7 +650,7 @@ class World1Lessons {
       options: ['-16', '16', '-10', '10'],
       correctAnswerIndex: 1,
       feedback: 'Menos por menos es más (+). 8 x 2 = 16.',
-      conceptTag: 'ley_signos_2', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'ley_signos_2',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -659,7 +659,7 @@ class World1Lessons {
       options: ['Positivo', 'Negativo', 'Cero', 'Depende'],
       correctAnswerIndex: 1,
       feedback: 'Signos diferentes siempre dan negativo.',
-      conceptTag: 'ley_signos', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'ley_signos',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -668,7 +668,7 @@ class World1Lessons {
       options: ['-1500', '1500', '0', 'Indefinido'],
       correctAnswerIndex: 2,
       feedback: 'Todo multiplicado por cero es cero.',
-      conceptTag: 'cadena_cero', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'cadena_cero',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -677,7 +677,7 @@ class World1Lessons {
       options: ['-12', '12', '-6', '7'],
       correctAnswerIndex: 0,
       feedback: '(2)x(-3) = -6. Luego (-6)x(2) = -12.',
-      conceptTag: 'triple_mult', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'triple_mult',
     ),
   ];
 
@@ -690,7 +690,7 @@ class World1Lessons {
       title: 'División',
       content:
           'Dividir es repartir algo en partes iguales. La excelente noticia es que usa EXACTAMENTE la misma Ley de Signos que aprendiste en la multiplicación.',
-      icon: Icons.horizontal_split,
+      imagePath: 'assets/images/lessons/division.jpg',
     ),
     LessonSlide(
       type: SlideType.teaching,
@@ -707,21 +707,21 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'Menos entre menos da más (+). Luego divides 20 entre 4. El resultado es 5 positivo.',
-      conceptTag: 'division_neg', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'division_neg',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Repartir Deudas',
       content:
           'La división con negativos suele usarse para deudas.\n\nTienes una deuda de \$30 (-30) y la repartes entre 3 hermanos. \n-30 / 3 = -10. ¡Cada hermano recibe una deuda de \$10!',
-      icon: Icons.money_off,
+      lottieUrl: 'assets/lottie/dinero.json',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Fracciones son divisiones',
       content:
-          'Recuerda que una fracción como -10 / 2 es lo mismo que decir "menos diez dividido entre dos". Muchas veces verás las divisiones escritas como fracciones en álgebra.',
-      icon: Icons.call_split,
+          'Recuerda que una fracción como -10 / 2 es lo mismo que decir "menos diez dividido entre dos". Muchas veces verás las divisiones escritas como fracciones en aritmética.',
+      imagePath: 'assets/images/lessons/foco.jpg',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -731,7 +731,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'Positivo entre negativo da negativo (-). 18 entre 3 es 6. Resultado: -6.',
-      conceptTag: 'division_basica', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'division_basica',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -741,14 +741,14 @@ class World1Lessons {
       correctAnswerIndex: 0,
       feedback:
           'Negativo entre positivo da negativo. 100 entre 10 es 10. Queda -10.',
-      conceptTag: 'division_basica', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'division_basica',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'El Límite del Universo',
       content:
           'OJO AL CERO:\n\n- Sí puedes dividir cero: 0 manzanas entre 5 amigos = 0 para cada uno (0/5 = 0).\n- NUNCA PUEDES DIVIDIR ENTRE CERO: 5 manzanas repartidas entre "nadie" no tiene sentido. 5/0 da Error Matemático (Indefinido).',
-      icon: Icons.warning,
+      imagePath: 'assets/images/lessons/universo.jpg',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -758,7 +758,7 @@ class World1Lessons {
       correctAnswerIndex: 3,
       feedback:
           'Dividir entre cero no existe. Es una operación matemáticamente indefinida.',
-      conceptTag: 'cero_dividido', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'cero_dividido',
     ),
     LessonSlide(
       type: SlideType.quizSummary,
@@ -774,7 +774,7 @@ class World1Lessons {
       options: ['-10', '10', '-45', '45'],
       correctAnswerIndex: 1,
       feedback: 'Menos entre menos da más (+). 50 / 5 = 10.',
-      conceptTag: 'division_neg', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'division_neg',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -784,7 +784,7 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'Cero dividido entre CUALQUIER número (excepto 0) siempre es 0.',
-      conceptTag: 'cero_dividido', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'cero_dividido',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -793,7 +793,7 @@ class World1Lessons {
       options: ['-12', '0', '1', 'Indefinido'],
       correctAnswerIndex: 3,
       feedback: '¡Nunca se puede dividir un número entre cero!',
-      conceptTag: 'cero_dividido', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'cero_dividido',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -802,7 +802,7 @@ class World1Lessons {
       options: ['12', '-12', '26', '-26'],
       correctAnswerIndex: 1,
       feedback: 'Negativo entre positivo da negativo. La mitad de 24 es 12.',
-      conceptTag: 'division_basica', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'division_basica',
     ),
   ];
 
@@ -815,14 +815,14 @@ class World1Lessons {
       title: 'Operaciones Combinadas',
       content:
           'Llegamos al jefe final del Mundo 1.\n\n¿Qué pasa cuando hay sumas, restas y multiplicaciones en una misma ecuación larga? Debes respetar las reglas de la Jerarquía.',
-      icon: Icons.account_tree,
+      lottieUrl: 'assets/lottie/operaciones.json',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Jerarquía (PEMDAS)',
       content:
           'Resuelve SIEMPRE en este estricto orden:\n\n1. Paréntesis.\n2. Exponentes (Potencias).\n3. Multiplicaciones y Divisiones.\n4. Sumas y Restas (Van siempre al final).\n\n*Nota: Si hay operaciones del mismo nivel juntas, lee de izquierda a derecha.*',
-      icon: Icons.sort,
+      imagePath: 'assets/images/lessons/pemdas.jpg',
     ),
     LessonSlide(
       type: SlideType.teaching,
@@ -839,7 +839,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'Por la jerarquía, la multiplicación (2 x 3 = 6) se hace PRIMERO. Luego restas 10 - 6 = 4.',
-      conceptTag: 'jerarquia_resta', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'jerarquia_resta',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -850,14 +850,14 @@ class World1Lessons {
       correctAnswerIndex: 2,
       feedback:
           'De izquierda a derecha: Primero 20 / 2 = 10. Luego 10 x 5 = 50.',
-      conceptTag: 'jerarquia', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'jerarquia',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'El Poder de los Paréntesis',
       content:
           'El Paréntesis es el Rey absoluto. Rompe cualquier regla de jerarquía.\n\nSi pones una suma dentro de un paréntesis (5 + 3) x 2, ¡estás OBLIGANDO a que esa suma se resuelva antes que la multiplicación!',
-      icon: Icons.data_array,
+      imagePath: 'assets/images/lessons/parentesis.jpg',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -867,14 +867,14 @@ class World1Lessons {
       correctAnswerIndex: 0,
       feedback:
           'El paréntesis se hace primero: (10 - 2) = 8. Luego multiplicas el resultado: 8 x 3 = 24.',
-      conceptTag: 'parentesis', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'parentesis',
     ),
     LessonSlide(
       type: SlideType.teaching,
       title: 'Combinando Signos y Jerarquía',
       content:
           'Un nivel avanzado: -5 + 20 / -4\n\n1. División primero: 20 / -4 = -5\n2. Queda: -5 + -5\n3. Dos signos pegados (+ -) se vuelve resta: -5 - 5\n4. Signos iguales se suman: -10.',
-      icon: Icons.functions,
+      lottieUrl: 'assets/lottie/jerarquia.json',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -884,11 +884,11 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'Multiplicación primero: (-2) x 3 = -6. Queda: 5 + (-6). Signos diferentes se restan. 5 - 6 = -1.',
-      conceptTag: 'jerarquia_basica', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'jerarquia_basica',
     ),
     LessonSlide(
       type: SlideType.quizSummary,
-      title: 'Cuestionario de Jerarquías',
+      title: 'Cuestionario de Operaciones Combinadas',
       content:
           'Si pasas esta prueba, habrás conquistado el Reino Numérico por completo. ¡Mucha suerte!',
       icon: Icons.workspace_premium,
@@ -901,7 +901,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'Primero la multiplicación: 5 x 2 = 10. Luego la suma: 5 + 10 = 15.',
-      conceptTag: 'jerarquia', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'jerarquia',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -911,7 +911,7 @@ class World1Lessons {
       correctAnswerIndex: 0,
       feedback:
           'El paréntesis manda: (5 + 5) = 10. Luego multiplicas: 10 x 2 = 20.',
-      conceptTag: 'parentesis', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'parentesis',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -921,7 +921,7 @@ class World1Lessons {
       correctAnswerIndex: 0,
       feedback:
           'La división tiene prioridad. Primero 20 / 2 = 10. Luego sumas 5.',
-      conceptTag: 'jerarquia_resta', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'jerarquia_resta',
     ),
     LessonSlide(
       type: SlideType.exercise,
@@ -931,7 +931,7 @@ class World1Lessons {
       correctAnswerIndex: 1,
       feedback:
           'Paso 1: (10 - 2) = 8. Paso 2: 8 x 2 = 16. Paso 3: -5 + 16 = 11.',
-      conceptTag: 'jefe_final', // <-- ETIQUETA AÑADIDA
+      conceptTag: 'jefe_final',
     ),
   ];
 }
