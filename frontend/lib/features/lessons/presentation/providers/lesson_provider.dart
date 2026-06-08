@@ -48,6 +48,9 @@ class LessonProvider extends ChangeNotifier {
   Map<int, LessonSlide> _sessionDynamicExercises = {};
   Map<int, bool> _sessionEpicQuests = {};
 
+  // --- NUEVO: Control antifraude para el algoritmo ---
+  bool _isFirstAttempt = true;
+
   LessonSlide get currentSlide {
     if (_slides.isEmpty) {
       return LessonSlide(type: SlideType.intro, title: 'Error', content: '');
@@ -245,11 +248,24 @@ class LessonProvider extends ChangeNotifier {
           // Si el slide no tiene dificultad (por ser fijo de teoría), asumimos el nivel actual
 
           _isCorrect = true;
-          userProvider.addCoins(5);
 
-          // --- NUEVO: Pasamos "true" y la dificultad de la pregunta ---
-          userProvider.updateSkillLevel(true, slideDifficulty);
-
+          // --- SOLO PREMIAMOS SI ES SU PRIMER INTENTO ---
+          if (_isFirstAttempt) {
+            userProvider.addCoins(5);
+            userProvider.updateSkillLevel(true, slideDifficulty);
+            _showFloatingMessage(
+              context,
+              '¡Correcto! +5 Monedas',
+              Colors.green,
+            );
+          } else {
+            // Si es un reintento, lo felicitamos por corregir, pero NO le subimos el nivel ni damos monedas
+            _showFloatingMessage(
+              context,
+              '¡Bien corregido! Sigamos.',
+              Colors.orange,
+            );
+          }
           _completedExercises.add(_currentIndex);
 
           userProvider.markExerciseCompleted(
@@ -266,27 +282,25 @@ class LessonProvider extends ChangeNotifier {
                   }
                 : null,
           );
-
-          _showFloatingMessage(
-            context,
-            '¡Correcto! +5 Monedas 🟡',
-            Colors.green,
-          );
         } else {
           _isCorrect = false;
           userProvider.deductLife();
 
-          // --- NUEVO: Pasamos "false" y la dificultad de la pregunta ---
-          userProvider.updateSkillLevel(false, slideDifficulty);
+          // --- SOLO CASTIGAMOS Y REPORTAMOS EN EL PRIMER ERROR ---
+          if (_isFirstAttempt) {
+            userProvider.updateSkillLevel(false, slideDifficulty);
 
-          // --- NUEVO: REGISTRAMOS EL ERROR EN EL HISTORIAL PARA EL TUTOR ---
-          userProvider.addFailedExercise(
-            worldId: _currentWorldId ?? 'Desconocido',
-            conceptTag: currentSlide.conceptTag ?? 'Concepto General',
-            questionText: currentSlide.content,
-            feedback:
-                currentSlide.feedback ?? 'Repasar conceptos de este tema.',
-          );
+            userProvider.addFailedExercise(
+              worldId: _currentWorldId ?? 'Desconocido',
+              conceptTag: currentSlide.conceptTag ?? 'Concepto General',
+              questionText: currentSlide.content,
+              feedback:
+                  currentSlide.feedback ?? 'Repasar conceptos de este tema.',
+            );
+
+            // Marcamos que ya quemó su primer intento
+            _isFirstAttempt = false;
+          }
 
           if (userProvider.lives <= 0) {
             _showFloatingMessage(
@@ -316,6 +330,8 @@ class LessonProvider extends ChangeNotifier {
     // 2. AVANZAR A LA SIGUIENTE DIAPOSITIVA
     if (_currentIndex < _slides.length - 1) {
       _currentIndex++;
+      // --- NUEVO: Reseteamos el intento para la nueva pregunta ---
+      _isFirstAttempt = true;
 
       if (_slides[_currentIndex].type == SlideType.exercise && !_isReviewMode) {
         // --- VERIFICAR CACHÉ ANTES DE PEDIR A PYTHON ---
