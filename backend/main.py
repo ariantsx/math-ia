@@ -1,5 +1,6 @@
 import string
-
+import os
+import smtplib
 from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +13,8 @@ from pydantic import BaseModel
 import random
 from datetime import UTC, datetime, timedelta
 from typing import Dict, Any, List
-from fastapi import HTTPException # <-- Asegúrate de importar HTTPException en la parte superior
+from fastapi import HTTPException, BackgroundTasks
+from email.message import EmailMessage
 
 # Importamos lo que creamos
 from database import engine, SessionLocal
@@ -31,6 +33,39 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def send_recovery_email(receiver_email: str, recovery_code: str):
+    sender_email = os.getenv("EMAIL_SENDER")
+    sender_password = os.getenv("EMAIL_PASSWORD")
+
+    if not sender_email or not sender_password:
+        print("Error: Credenciales de correo no configuradas en el .env")
+        return
+
+    # Construimos el mensaje
+    msg = EmailMessage()
+    msg['Subject'] = 'Código de Recuperación - MathIA'
+    msg['From'] = f"MathIA Soporte <{sender_email}>"
+    msg['To'] = receiver_email
+    msg.set_content(f"""\
+    ¡Hola!
+
+    Has solicitado recuperar tu contraseña en la aplicación MathIA.
+    Tu código de verificación de 6 dígitos es: {recovery_code}
+
+    Si no solicitaste este cambio, por favor ignora este correo.
+
+    El equipo de MathIA.
+    """)
+
+    # Nos conectamos a Gmail y enviamos
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(sender_email, sender_password)
+            smtp.send_message(msg)
+        print(f"Correo enviado exitosamente a {receiver_email}")
+    except Exception as e:
+        print(f"Error al enviar el correo: {e}")
 
 # --- NUEVO BLOQUE: Configuración de CORS ---
 app.add_middleware(
@@ -256,7 +291,7 @@ async def sync_user_data(user_id: int, data: UserUpdateData, db: Session = Depen
 
 # --- ENDPOINT 1: Solicitar Código ---
 @app.post("/api/forgot-password")
-async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
+async def forgot_password(request: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == request.email).first()
     
     if not user:
@@ -271,13 +306,17 @@ async def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(
     user.reset_code = code
     user.reset_code_expires = expiration
     db.commit()
+
+    # --- NUEVO: Enviamos el correo en segundo plano ---
+    # Asumiendo que generaste el código en una variable llamada 'code'
+    background_tasks.add_task(send_recovery_email, request.email, code)
     
     # EN PRODUCCIÓN: Aquí llamarías a SendGrid/AWS SES para enviar el email.
     # EN DESARROLLO: Lo imprimimos en consola para que puedas verlo y probar.
-    print(f"========== EMAIL SIMULADO ==========")
-    print(f"Para: {user.email}")
-    print(f"Tu código de recuperación es: {code}")
-    print(f"====================================")
+    # print(f"========== EMAIL SIMULADO ==========")
+    # print(f"Para: {user.email}")
+    # print(f"Tu código de recuperación es: {code}")
+    # print(f"====================================")
     
     return {"success": True, "message": "Código enviado a tu correo."}
 
@@ -663,7 +702,7 @@ def unlink_student_from_tutor(req: UnlinkStudentRequest, db: Session = Depends(g
 
 # 1. Solicitar Código de Recuperación
 @app.post("/api/tutor/forgot-password")
-def tutor_forgot_password(req: TutorForgotPasswordRequest, db: Session = Depends(get_db)):
+def tutor_forgot_password(req: TutorForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     tutor = db.query(models.Tutor).filter(models.Tutor.email == req.email.strip().lower()).first()
     if not tutor:
         # Por seguridad en login/recuperación, es mejor decir que si el correo existe se envió el código
@@ -678,10 +717,11 @@ def tutor_forgot_password(req: TutorForgotPasswordRequest, db: Session = Depends
     db.commit()
     
     # SIMULACIÓN DE ENVÍO DE EMAIL (Aparecerá en tu terminal de Uvicorn)
-    print("\n" + "="*50)
-    print(f"📧 [EMAIL SIMULADO] Para: {tutor.email}")
-    print(f"🔑 Tu código de recuperación de MathIA es: {code}")
-    print("="*50 + "\n")
+    # print("\n" + "="*50)
+    # print(f"📧 [EMAIL SIMULADO] Para: {tutor.email}")
+    # print(f"🔑 Tu código de recuperación de MathIA es: {code}")
+    # print("="*50 + "\n")
+    background_tasks.add_task(send_recovery_email, req.email, code)
     
     return {"status": "success", "message": "Código generado correctamente."}
 

@@ -29,7 +29,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() => _codeSent = true);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Código enviado. Revisa la consola de tu backend.'),
+          content: Text('¡Código enviado! Revisa tu correo electrónico.'),
           backgroundColor: Colors.blue,
         ),
       );
