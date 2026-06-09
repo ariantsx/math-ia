@@ -1,9 +1,17 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from dotenv import load_dotenv
 
-# Cambia "usuario_postgres" y "tu_contraseña" por tus credenciales locales.
-# "math_ia" es el nombre de la base de datos que creaste.
-URL_DATABASE = "postgresql://postgres:12345@localhost:5432/math_ia"
+# Cargar las variables del archivo .env
+load_dotenv()
+
+# Obtener la URL de la base de datos de forma segura
+URL_DATABASE = os.getenv("DATABASE_URL")
+
+# Validar que la variable exista para evitar errores silenciosos
+if not URL_DATABASE:
+    raise ValueError("ERROR: No se encontró la variable DATABASE_URL en el entorno.")
 
 # Motor de conexión
 engine = create_engine(URL_DATABASE)
