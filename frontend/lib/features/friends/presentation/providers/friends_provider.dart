@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:math_ia/core/config/api_config.dart';
 
 class FriendsProvider extends ChangeNotifier {
-  final String _baseUrl = 'http://localhost:3000/api';
+  final String _baseUrl = ApiConfig.baseUrl;
 
   bool _isLoading = false;
   List<dynamic> _leaderboard = [];
@@ -19,7 +20,7 @@ class FriendsProvider extends ChangeNotifier {
 
     try {
       final response = await http.get(
-        Uri.parse('$_baseUrl/users/$userId/leaderboard'),
+        Uri.parse('$_baseUrl/api/users/$userId/leaderboard'),
       );
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
@@ -37,7 +38,7 @@ class FriendsProvider extends ChangeNotifier {
   Future<Map<String, dynamic>> addFriend(int userId, String email) async {
     try {
       final response = await http.post(
-        Uri.parse('$_baseUrl/users/$userId/add-friend'),
+        Uri.parse('$_baseUrl/api/users/$userId/add-friend'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'friend_email': email}),
       );
@@ -57,7 +58,7 @@ class FriendsProvider extends ChangeNotifier {
   Future<void> removeFriend(int userId, int friendId) async {
     try {
       final response = await http.delete(
-        Uri.parse('$_baseUrl/users/$userId/remove-friend/$friendId'),
+        Uri.parse('$_baseUrl/api/users/$userId/remove-friend/$friendId'),
       );
       if (response.statusCode == 200) {
         await fetchLeaderboard(userId); // Recargamos la lista

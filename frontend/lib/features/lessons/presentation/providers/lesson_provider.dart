@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:math_ia/core/config/api_config.dart';
 import 'package:math_ia/core/providers/user_provider.dart';
 import 'package:math_ia/features/lessons/data/lesson_models.dart';
 import 'package:math_ia/features/lessons/data/world1_lessons.dart';
@@ -11,6 +12,7 @@ import 'package:math_ia/features/lessons/data/world5_lessons.dart';
 import 'package:math_ia/features/lessons/data/world6_lessons.dart';
 
 class LessonProvider extends ChangeNotifier {
+  final String _baseUrl = ApiConfig.baseUrl;
   UserProvider? _userProvider;
 
   int _currentIndex = 0;
@@ -173,7 +175,7 @@ class LessonProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final url = Uri.parse('http://127.0.0.1:3000/api/exercises/next');
+      final url = Uri.parse('$_baseUrl/api/exercises/next');
       final String? targetConcept = _slides[_currentIndex].conceptTag;
 
       final response = await http

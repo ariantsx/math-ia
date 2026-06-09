@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:math_ia/core/config/api_config.dart';
 import 'package:math_ia/core/constants/worlds_catalog.dart';
 
 class UserProvider extends ChangeNotifier {
   // Configura tu URL de FastAPI
-  final String _baseUrl = 'http://localhost:3000/api';
+  final String _baseUrl = ApiConfig.baseUrl;
 
   // Datos del usuario en memoria
   int _userId = 0;
@@ -178,7 +179,9 @@ class UserProvider extends ChangeNotifier {
   Future<void> fetchUserData(int id) async {
     _userId = id;
     try {
-      final response = await http.get(Uri.parse('$_baseUrl/users/$_userId'));
+      final response = await http.get(
+        Uri.parse('$_baseUrl/api/users/$_userId'),
+      );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _name = data['name'];
@@ -238,7 +241,7 @@ class UserProvider extends ChangeNotifier {
     if (_userId == 0) return;
     try {
       await http.put(
-        Uri.parse('$_baseUrl/users/$_userId/sync'),
+        Uri.parse('$_baseUrl/api/users/$_userId/sync'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'exp': _exp,
@@ -402,9 +405,7 @@ class UserProvider extends ChangeNotifier {
   Future<bool> generateTutorCode() async {
     try {
       // Recuerda usar localhost en el emulador, o tu IP de red si pruebas en físico
-      final url = Uri.parse(
-        'http://localhost:3000/api/student/$_userId/generate-code',
-      );
+      final url = Uri.parse('$_baseUrl/api/student/$_userId/generate-code');
 
       final response = await http
           .post(url, headers: {'Content-Type': 'application/json'})

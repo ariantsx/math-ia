@@ -1,15 +1,16 @@
 import 'dart:convert';
 import 'dart:async'; // ¡Importante agregar esto!
 import 'package:http/http.dart' as http;
+import 'package:math_ia/core/config/api_config.dart';
 
 class AuthService {
   // Reemplaza esto con la URL real de tu backend.
   // Si usas un emulador de Android y tu backend está en tu PC local, usa 'http://10.0.2.2:3000'
-  final String _baseUrl = 'http://localhost:3000/api';
+  final String _baseUrl = ApiConfig.baseUrl;
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
-      final url = Uri.parse('$_baseUrl/login');
+      final url = Uri.parse('$_baseUrl/api/login');
 
       // Realizamos la petición POST al servidor
       final response = await http
@@ -58,7 +59,7 @@ class AuthService {
     String password,
   ) async {
     try {
-      final url = Uri.parse('$_baseUrl/register');
+      final url = Uri.parse('$_baseUrl/api/register');
 
       final response = await http
           .post(
@@ -106,7 +107,7 @@ class AuthService {
     try {
       final response = await http
           .post(
-            Uri.parse('$_baseUrl/forgot-password'),
+            Uri.parse('$_baseUrl/api/forgot-password'),
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({'email': email}),
           )
@@ -143,7 +144,7 @@ class AuthService {
     try {
       final response = await http
           .post(
-            Uri.parse('$_baseUrl/reset-password'),
+            Uri.parse('$_baseUrl/api/reset-password'),
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({
               'email': email,

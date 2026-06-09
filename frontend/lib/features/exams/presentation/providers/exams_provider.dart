@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:math_ia/core/config/api_config.dart';
 
 // --- MODELOS ---
 class ExamQuestion {
@@ -30,8 +31,7 @@ class ExamResult {
 enum ExamState { intro, taking, summary, details }
 
 class ExamsProvider extends ChangeNotifier {
-  final String _baseUrl =
-      'http://localhost:3000/api'; // Ajusta la IP según tu entorno
+  final String _baseUrl = ApiConfig.baseUrl;
 
   ExamState _currentState = ExamState.intro;
   ExamState get currentState => _currentState;
@@ -70,7 +70,7 @@ class ExamsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await http.get(Uri.parse('$_baseUrl/questions'));
+      final response = await http.get(Uri.parse('$_baseUrl/api/questions'));
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         final List<dynamic> questionsData = decoded['data'];
@@ -162,7 +162,7 @@ class ExamsProvider extends ChangeNotifier {
     // Guardar en la base de datos silenciosamente
     try {
       await http.post(
-        Uri.parse('$_baseUrl/users/$userId/exams'),
+        Uri.parse('$_baseUrl/api/users/$userId/exams'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'score': correctAnswers,
