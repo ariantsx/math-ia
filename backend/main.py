@@ -1,6 +1,6 @@
 import string
 import os
-import smtplib
+import requests
 from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,7 +14,6 @@ import random
 from datetime import UTC, datetime, timedelta
 from typing import Dict, Any, List
 from fastapi import HTTPException, BackgroundTasks
-from email.message import EmailMessage
 
 # Importamos lo que creamos
 from database import engine, SessionLocal
@@ -35,37 +34,47 @@ def get_db():
         db.close()
 
 def send_recovery_email(receiver_email: str, recovery_code: str):
+    api_key = os.getenv("BREVO_API_KEY")
     sender_email = os.getenv("EMAIL_SENDER")
-    sender_password = os.getenv("EMAIL_PASSWORD")
 
-    if not sender_email or not sender_password:
-        print("Error: Credenciales de correo no configuradas en el .env")
+    if not api_key or not sender_email:
+        print("Error: Faltan credenciales de Brevo en el .env")
         return
 
-    # Construimos el mensaje
-    msg = EmailMessage()
-    msg['Subject'] = 'Código de Recuperación - MathIA'
-    msg['From'] = f"MathIA Soporte <{sender_email}>"
-    msg['To'] = receiver_email
-    msg.set_content(f"""\
-    ¡Hola!
+    # Usamos la API pública y permitida de Brevo
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": api_key,
+        "content-type": "application/json"
+    }
+    
+    # Aquí puedes inyectar un diseño HTML más bonito
+    html_content = f"""
+    <div style="font-family: Arial, sans-serif; text-align: center; color: #333;">
+        <h2 style="color: #2196F3;">MathIA - Panel de Seguridad</h2>
+        <p>Has solicitado recuperar tu contraseña. Tu código de verificación de 6 dígitos es:</p>
+        <h1 style="background-color: #f4f4f4; padding: 10px; display: inline-block; letter-spacing: 5px;">
+            {recovery_code}
+        </h1>
+        <p style="font-size: 12px; color: #999;">Si no solicitaste este cambio, ignora este correo.</p>
+    </div>
+    """
 
-    Has solicitado recuperar tu contraseña en la aplicación MathIA.
-    Tu código de verificación de 6 dígitos es: {recovery_code}
-
-    Si no solicitaste este cambio, por favor ignora este correo.
-
-    El equipo de MathIA.
-    """)
-
-    # Nos conectamos a Gmail y enviamos
+    data = {
+        "sender": {"name": "Soporte MathIA", "email": sender_email},
+        "to": [{"email": receiver_email}],
+        "subject": "Código de Recuperación - MathIA",
+        "htmlContent": html_content
+    }
+    
     try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login(sender_email, sender_password)
-            smtp.send_message(msg)
-        print(f"Correo enviado exitosamente a {receiver_email}")
-    except Exception as e:
-        print(f"Error al enviar el correo: {e}")
+        # Petición HTTP (Puerto 443) - Render no bloqueará esto
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status() 
+        print(f"Correo HTTP enviado exitosamente a {receiver_email}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error al enviar el correo vía API: {e}")
 
 # --- NUEVO BLOQUE: Configuración de CORS ---
 app.add_middleware(
