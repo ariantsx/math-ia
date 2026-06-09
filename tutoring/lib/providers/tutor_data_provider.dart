@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:tutoring/core/config/api_config.dart';
+
 class TutorDataProvider with ChangeNotifier {
   List<dynamic> _students = [];
   bool _isLoading = false;
@@ -9,7 +11,7 @@ class TutorDataProvider with ChangeNotifier {
   List<dynamic> get students => _students;
   bool get isLoading => _isLoading;
 
-  final String baseUrl = 'http://localhost:3000/api';
+  final String baseUrl = ApiConfig.baseUrl;
 
   // 1. Obtener la lista de alumnos
   Future<void> fetchDashboardData(int tutorId) async {
@@ -17,7 +19,7 @@ class TutorDataProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final url = Uri.parse('$baseUrl/tutor/$tutorId/dashboard');
+      final url = Uri.parse('$baseUrl/api/tutor/$tutorId/dashboard');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -39,7 +41,7 @@ class TutorDataProvider with ChangeNotifier {
     String code,
   ) async {
     try {
-      final url = Uri.parse('$baseUrl/tutor/link');
+      final url = Uri.parse('$baseUrl/api/tutor/link');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -65,7 +67,7 @@ class TutorDataProvider with ChangeNotifier {
 
   Future<String?> unlinkStudent(int tutorId, int studentId) async {
     try {
-      final url = Uri.parse('$baseUrl/tutor/unlink-student');
+      final url = Uri.parse('$baseUrl/api/tutor/unlink-student');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:tutoring/core/config/api_config.dart';
+
 class TutorAuthProvider with ChangeNotifier {
   int? _tutorId;
   String? _tutorName;
@@ -11,12 +13,12 @@ class TutorAuthProvider with ChangeNotifier {
   bool get isAuthenticated => _tutorId != null;
 
   // URL de tu backend (Ajusta el puerto si es necesario)
-  final String baseUrl = 'http://localhost:3000/api';
+  final String baseUrl = ApiConfig.baseUrl;
 
   Future<bool> login(String email, String password) async {
     try {
       // Nota: Debes asegurar que este endpoint exista en tu main.py
-      final url = Uri.parse('$baseUrl/tutor/login');
+      final url = Uri.parse('$baseUrl/api/tutor/login');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -39,7 +41,7 @@ class TutorAuthProvider with ChangeNotifier {
 
   Future<String?> register(String name, String email, String password) async {
     try {
-      final url = Uri.parse('$baseUrl/tutor/register');
+      final url = Uri.parse('$baseUrl/api/tutor/register');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -69,7 +71,7 @@ class TutorAuthProvider with ChangeNotifier {
   // Paso 1: Enviar correo para solicitar código
   Future<bool> sendRecoveryCode(String email) async {
     try {
-      final url = Uri.parse('$baseUrl/tutor/forgot-password');
+      final url = Uri.parse('$baseUrl/api/tutor/forgot-password');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -89,7 +91,7 @@ class TutorAuthProvider with ChangeNotifier {
     String newPassword,
   ) async {
     try {
-      final url = Uri.parse('$baseUrl/tutor/reset-password');
+      final url = Uri.parse('$baseUrl/api/tutor/reset-password');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

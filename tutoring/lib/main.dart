@@ -26,7 +26,7 @@ class MathIATutorApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'MathIA Tutor Dashboard',
+      title: 'MathIA Tutoría',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.grey[100],
