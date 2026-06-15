@@ -88286,7 +88286,7 @@ $S:567}
 A.alR.prototype={
 $2(a,b){var s=this,r=null,q=s.b,p=s.c,o=t.p,n=A.dU(A.c([B.Xv,B.b0,A.jX(q,B.HZ,r,B.A5,r,!1,B.bT),B.b0,A.jX(p,B.HV,r,r,6,!1,B.Ss)],o),B.Q,B.C,B.bb),m=A.uZ(B.Xq,new A.alP(a),r),l=A.Kj(r,r,B.aH,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r),k=s.a,j=k.a
 q=j?r:new A.alQ(k,p,q,a,b,s.d)
-return A.av4(A.c([m,A.Ki(j?B.zG:B.XO,q,l)],o),n,r,B.Xu)},
+return A.av4(A.c([m,A.Ki(j?B.zG:B.XP,q,l)],o),n,r,B.Xu)},
 $S:568}
 A.alP.prototype={
 $0(){A.fO(this.a,!1).mT(null)
@@ -88348,7 +88348,7 @@ case 3:n=b
 p.am(new A.an2(p))
 m=t.Pu
 if(n){p.am(new A.an3(p))
-p.c.ac(m).f.js(B.RO)}else p.c.ac(m).f.js(B.RN)
+p.c.ac(m).f.js(B.RN)}else p.c.ac(m).f.js(B.RO)
 case 1:return A.Q(q,r)}})
 return A.R($async$xi,r)},
 wx(){var s=0,r=A.S(t.H),q,p=this,o,n,m,l,k
@@ -88372,7 +88372,7 @@ o.toString
 A.fO(o,!1).mT(null)}else m.ac(o).f.js(A.ahf(null,null,null,B.f5,null,B.L,null,A.c0(n,null,null,null,null,null,null),null,B.bD,null,null,null,null,null,null,null,null,null,null))
 case 1:return A.Q(q,r)}})
 return A.R($async$wx,r)},
-K(a){var s,r,q=this,p=null,o=A.d9(15),n=t.p,m=A.c([B.HE,B.b0,B.XP,B.fq,A.jX(q.d,B.kq,!q.r,p,p,!1,B.bT)],n)
+K(a){var s,r,q=this,p=null,o=A.d9(15),n=t.p,m=A.c([B.HE,B.b0,B.XQ,B.fq,A.jX(q.d,B.kq,!q.r,p,p,!1,B.bT)],n)
 if(q.r)B.b.Y(m,A.c([B.b0,A.jX(q.e,B.HY,p,B.SN,6,!1,B.bT),B.b0,A.jX(q.f,B.HT,p,p,p,!0,B.bT)],n))
 m.push(B.fr)
 n=A.Kj(p,p,B.aH,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p,p)
@@ -88424,7 +88424,7 @@ A.aBg(p,"/dashboard",n,n)}else p.ac(t.Pu).f.js(B.RS)
 return A.Q(null,r)}})
 return A.R($async$xE,r)},
 K(a){var s=this,r=null,q=A.d9(15),p=A.jX(s.d,B.kq,r,r,r,!1,B.bT),o=A.jX(s.e,B.HW,r,r,r,!0,B.bT),n=s.f?r:s.gag8(),m=A.Kj(r,r,B.aH,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r)
-return A.aex(r,A.fC(A.db(r,A.dU(A.c([B.HC,B.b0,B.XT,B.fr,p,B.b0,o,B.fq,A.ez(A.Ki(s.f?B.mP:B.XD,n,m),45,1/0),B.fq,A.uZ(A.c0("\xbfOlvidaste tu contrase\xf1a?",r,r,r,A.dh(r,r,B.dy,r,r,r,r,r,r,r,r,14,r,r,r,r,r,!0,r,r,r,r,r,r,r,r),r,r),new A.aom(a),r),B.ip,A.uZ(B.Xt,new A.aon(a),r)],t.p),B.Q,B.C,B.bb),B.t,r,new A.cB(B.k,r,r,q,B.ky,r,B.ak),r,r,r,r,B.jJ,r,r,400),r,r),r)}}
+return A.aex(r,A.fC(A.db(r,A.dU(A.c([B.HC,B.b0,B.XU,B.fr,p,B.b0,o,B.fq,A.ez(A.Ki(s.f?B.mP:B.XD,n,m),45,1/0),B.fq,A.uZ(A.c0("\xbfOlvidaste tu contrase\xf1a?",r,r,r,A.dh(r,r,B.dy,r,r,r,r,r,r,r,r,14,r,r,r,r,r,!0,r,r,r,r,r,r,r,r),r,r),new A.aom(a),r),B.ip,A.uZ(B.Xt,new A.aon(a),r)],t.p),B.Q,B.C,B.bb),B.t,r,new A.cB(B.k,r,r,q,B.ky,r,B.ak),r,r,r,r,B.jJ,r,r,400),r,r),r)}}
 A.aok.prototype={
 $0(){return this.a.f=!0},
 $S:0}
@@ -88488,7 +88488,7 @@ k=A.jX(p.f,A.aAt(o,B.c8,o,o,o,o,o,o,!0,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o
 s=A.jX(p.r,B.HU,o,o,o,p.x,B.bT)
 r=p.w?o:p.gag9()
 q=A.Kj(o,o,B.aH,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o)
-return A.aex(o,A.fC(A.aO7(A.db(o,A.dU(A.c([B.HP,B.b0,B.XV,B.ip,B.XR,B.fr,m,B.b0,l,B.b0,k,B.b0,s,B.fr,A.ez(A.Ki(p.w?B.zG:B.XI,r,q),45,1/0),B.b0,A.uZ(B.Xo,new A.apB(a),o)],t.p),B.Q,B.C,B.bb),B.t,o,new A.cB(B.k,o,o,n,B.ky,o,B.ak),o,o,o,o,B.jJ,o,o,450)),o,o),o)}}
+return A.aex(o,A.fC(A.aO7(A.db(o,A.dU(A.c([B.HP,B.b0,B.XV,B.ip,B.XS,B.fr,m,B.b0,l,B.b0,k,B.b0,s,B.fr,A.ez(A.Ki(p.w?B.zG:B.XI,r,q),45,1/0),B.b0,A.uZ(B.Xo,new A.apB(a),o)],t.p),B.Q,B.C,B.bb),B.t,o,new A.cB(B.k,o,o,n,B.ky,o,B.ak),o,o,o,o,B.jJ,o,o,450)),o,o),o)}}
 A.apw.prototype={
 $0(){return this.a.w=!0},
 $S:0}
@@ -88604,7 +88604,7 @@ s=A.d9(12)
 r=k.a
 r=A.az4(A.aQ(B.d.aR(76.5),r.G()>>>16&255,r.G()>>>8&255,r.G()&255))
 k=k.a
-s=A.db(p,A.ex(A.c([A.p4(B.Hw,k,p,28),B.ls,A.dU(A.c([B.XQ,B.zH,A.c0(q.d,p,p,p,A.dh(p,p,k,p,p,p,p,p,p,p,p,22,p,p,B.a1,p,p,!0,p,p,p,p,p,p,p,p),p,p)],m),B.ar,B.C,B.Y)],m),B.Q,B.C,B.Y,0,p),B.t,p,new A.cB(j,p,r,s,p,p,B.ak),p,p,p,p,B.jH,p,p,1/0)
+s=A.db(p,A.ex(A.c([A.p4(B.Hw,k,p,28),B.ls,A.dU(A.c([B.XR,B.zH,A.c0(q.d,p,p,p,A.dh(p,p,k,p,p,p,p,p,p,p,p,22,p,p,B.a1,p,p,!0,p,p,p,p,p,p,p,p),p,p)],m),B.ar,B.C,B.Y)],m),B.Q,B.C,B.Y,0,p),B.t,p,new A.cB(j,p,r,s,p,p,B.ak),p,p,p,p,B.jH,p,p,1/0)
 k=q.e
 j=J.bc(k)
 return A.av4(p,A.ez(A.ex(A.c([n,B.zE,A.hU(A.dU(A.c([s,B.Rx,B.XL,B.Rw,A.hU(j.ga9(k)?A.fC(A.dU(A.c([A.p4(B.Hb,B.ng,p,48),B.ip,B.Xr],m),B.Q,B.hH,B.Y),p,p):A.aAV(new A.ahE(k),j.gD(k)),1)],m),B.ar,B.C,B.Y),3)],m),B.ar,B.C,B.Y,0,p),500,750),new A.cz(o,B.o),l)},
@@ -92270,11 +92270,11 @@ B.HB=new A.dt(B.Hx,60,B.cs,null,null)
 B.b0=new A.df(null,16,null,null)
 B.a1=new A.fH(700)
 B.TR=new A.m(!0,B.cs,null,null,null,null,18,B.a1,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.XN=new A.br("\xa1Excelente rendimiento!",null,B.TR,null,null,null,null,null,null)
+B.XO=new A.br("\xa1Excelente rendimiento!",null,B.TR,null,null,null,null,null,null)
 B.ip=new A.df(null,8,null,null)
 B.iu=new A.m(!0,B.f6,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.XB=new A.br("Este estudiante no tiene errores registrados en sus lecciones actuales.",null,B.iu,null,null,null,null,null,null)
-B.KC=s([B.HB,B.b0,B.XN,B.ip,B.XB],t.p)
+B.KC=s([B.HB,B.b0,B.XO,B.ip,B.XB],t.p)
 B.Fl=new A.xM(B.ap,B.C,B.bb,B.Q,null,B.bV,null,0,B.KC,null)
 B.CV=new A.ji(B.Z,null,null,B.Fl,null)
 B.CW=new A.xz(null,null,null,null,null,null,null,null,null)
@@ -94455,10 +94455,10 @@ B.XK=new A.br("Completa los campos correctamente (M\xedn. 6 caracteres).",null,n
 B.RL=new A.fV(B.XK,B.f5,null,null,null,null,null,null,null,null,null,null,null,B.bD,!1,null,null,null,B.L,null)
 B.XE=new A.br("\xa1Estudiante vinculado con \xe9xito!",null,null,null,null,null,null,null,null)
 B.RM=new A.fV(B.XE,B.cs,null,null,null,null,null,null,null,null,null,null,null,B.bD,!1,null,null,null,B.L,null)
-B.XS=new A.br("Error al procesar la solicitud.",null,null,null,null,null,null,null,null)
-B.RN=new A.fV(B.XS,B.f5,null,null,null,null,null,null,null,null,null,null,null,B.bD,!1,null,null,null,B.L,null)
-B.XU=new A.br("C\xf3digo enviado. Revisa la consola de tu backend.",null,null,null,null,null,null,null,null)
-B.RO=new A.fV(B.XU,B.aH,null,null,null,null,null,null,null,null,null,null,null,B.bD,!1,null,null,null,B.L,null)
+B.XN=new A.br("\xa1C\xf3digo enviado! Revisa tu correo electr\xf3nico.",null,null,null,null,null,null,null,null)
+B.RN=new A.fV(B.XN,B.aH,null,null,null,null,null,null,null,null,null,null,null,B.bD,!1,null,null,null,B.L,null)
+B.XT=new A.br("Error al procesar la solicitud.",null,null,null,null,null,null,null,null)
+B.RO=new A.fV(B.XT,B.f5,null,null,null,null,null,null,null,null,null,null,null,B.bD,!1,null,null,null,B.L,null)
 B.XH=new A.br("\xa1Cuenta creada! Bienvenido a la supervisi\xf3n de MathIA.",null,null,null,null,null,null,null,null)
 B.RP=new A.fV(B.XH,B.cs,null,null,null,null,null,null,null,null,null,null,null,B.bD,!1,null,null,null,B.L,null)
 B.Xl=new A.br("Por favor, ingresa el correo y un c\xf3digo v\xe1lido.",null,null,null,null,null,null,null,null)
@@ -94872,13 +94872,13 @@ B.XI=new A.br("Registrarse",null,B.Ac,null,null,null,null,null,null)
 B.XJ=new A.br("Vincular Alumno",null,B.it,null,null,null,null,null,null)
 B.VB=new A.m(!0,null,null,null,null,null,15,B.a1,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.XL=new A.br("Historial de Alertas de Aprendizaje",null,B.VB,null,null,null,null,null,null)
-B.XO=new A.br("Vincular",null,B.it,null,null,null,null,null,null)
+B.XP=new A.br("Vincular",null,B.it,null,null,null,null,null,null)
 B.lA=new A.m(!0,null,null,null,null,null,24,B.a1,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.XP=new A.br("Recuperar Contrase\xf1a",null,B.lA,null,null,null,null,null,null)
+B.XQ=new A.br("Recuperar Contrase\xf1a",null,B.lA,null,null,null,null,null,null)
 B.VC=new A.m(!0,B.J,null,null,null,null,12,B.a1,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.XQ=new A.br("Calificaci\xf3n \xdaltimo Examen",null,B.VC,null,null,null,null,null,null)
-B.XR=new A.br("Reg\xedstrate para supervisar a tus estudiantes.",null,B.iu,null,null,null,null,null,null)
-B.XT=new A.br("MathIA Supervisi\xf3n",null,B.lA,null,null,null,null,null,null)
+B.XR=new A.br("Calificaci\xf3n \xdaltimo Examen",null,B.VC,null,null,null,null,null,null)
+B.XS=new A.br("Reg\xedstrate para supervisar a tus estudiantes.",null,B.iu,null,null,null,null,null,null)
+B.XU=new A.br("MathIA Supervisi\xf3n",null,B.lA,null,null,null,null,null,null)
 B.XV=new A.br("Crear Cuenta de Tutor",null,B.lA,null,null,null,null,null,null)
 B.XY=new A.br("Distribuci\xf3n de Experiencia (XP)",null,B.Aa,null,null,null,null,null,null)
 B.a0m=new A.aiQ(0,"system")
