@@ -102,7 +102,7 @@ class StudentsRankingTable extends StatelessWidget {
                       _buildMetricCard(
                         Icons.public,
                         'Mundos Completados',
-                        '${student['worlds_completed'] ?? 0} / 6',
+                        '${student['worlds_completed'] ?? 0} / 3',
                         Colors.teal,
                         Colors.teal.shade50,
                       ),
