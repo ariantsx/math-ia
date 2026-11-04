@@ -41,6 +41,7 @@ dependencies:
   flutter_tex: ^5.2.7
   http: ^1.6.0
   lottie: ^3.3.3
+  flutter_secure_storage: ^11.2.0
 
 dev_dependencies:
   flutter_test:

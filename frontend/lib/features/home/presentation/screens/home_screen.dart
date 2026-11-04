@@ -40,6 +40,8 @@ class HomeScreen extends StatelessWidget {
           // Cambiamos el estado usando el Provider
           context.read<HomeProvider>().changeTab(index);
         },
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
         type: BottomNavigationBarType.fixed, // Necesario cuando hay > 3 items
         backgroundColor: Colors.white,
         selectedItemColor: Colors.blueAccent,

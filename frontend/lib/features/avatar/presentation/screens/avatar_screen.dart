@@ -92,6 +92,15 @@ class AvatarScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: const Text(
+          'Taller de Ensamblaje',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+      ),
       body: Column(
         children: [
           Expanded(
@@ -113,15 +122,15 @@ class AvatarScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Taller de Ensamblaje',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+                    // const Text(
+                    //   'Taller de Ensamblaje',
+                    //   style: TextStyle(
+                    //     color: Colors.white,
+                    //     fontSize: 20,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 20),
 
                     // --- EL ROBOT CON IMÁGENES REALES ---
                     Expanded(
@@ -184,7 +193,7 @@ class AvatarScreen extends StatelessWidget {
                     labelColor: Colors.blueAccent,
                     unselectedLabelColor: Colors.grey,
                     tabs: [
-                      Tab(icon: Icon(Icons.sports_baseball), text: 'Cabeza'),
+                      Tab(icon: Icon(Icons.psychology), text: 'Cabeza'),
                       Tab(icon: Icon(Icons.remove_red_eye), text: 'Rostro'),
                       Tab(icon: Icon(Icons.checkroom), text: 'Cuerpo'),
                     ],

@@ -257,7 +257,7 @@ class LessonProvider extends ChangeNotifier {
             userProvider.updateSkillLevel(true, slideDifficulty);
             _showFloatingMessage(
               context,
-              '¡Correcto! +5 Monedas',
+              '¡Correcto! +5 Monedas 🪙',
               Colors.green,
             );
           } else {

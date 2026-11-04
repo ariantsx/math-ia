@@ -220,7 +220,7 @@ class StoreScreen extends StatelessWidget {
             labelColor: Colors.blueAccent,
             unselectedLabelColor: Colors.grey,
             tabs: [
-              Tab(icon: Icon(Icons.sports_baseball), text: 'Sombreros'),
+              Tab(icon: Icon(Icons.psychology), text: 'Sombreros'),
               Tab(icon: Icon(Icons.remove_red_eye), text: 'Anteojos'),
               Tab(icon: Icon(Icons.checkroom), text: 'Polos'),
             ],
