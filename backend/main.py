@@ -11,9 +11,10 @@ import uvicorn
 from security import get_password_hash, verify_password
 from pydantic import BaseModel
 import random
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 from typing import Dict, Any, List
 from fastapi import HTTPException, BackgroundTasks
+import jwt
 
 # Importamos lo que creamos
 from database import engine, SessionLocal
@@ -75,6 +76,21 @@ def send_recovery_email(receiver_email: str, recovery_code: str):
         print(f"Correo HTTP enviado exitosamente a {receiver_email}")
     except requests.exceptions.RequestException as e:
         print(f"Error al enviar el correo vía API: {e}")
+
+
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_DAYS = 30 # Mantendrá la sesión abierta por 1 mes
+
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    # Generar la fecha de caducidad exacta
+    expire = datetime.now(timezone.utc) + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
+    to_encode.update({"exp": expire})
+    
+    # Fabricar y firmar el token real
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 # --- NUEVO BLOQUE: Configuración de CORS ---
 app.add_middleware(
@@ -180,10 +196,13 @@ async def login(user_data: LoginData, db: Session = Depends(get_db)):
     # Comparamos la contraseña enviada con el hash de la base de datos
     if not verify_password(user_data.password, db_user.password):
         return JSONResponse(status_code=401, content={"message": "Contraseña incorrecta"})
+    
+    # Es buena práctica incluir el correo y el ID dentro del token
+    token_real = create_access_token(data={"sub": db_user.email, "user_id": db_user.id})
 
     # 4. Login exitoso
     return {
-        "token": "fake-jwt-token-12345", # Token que usaremos más adelante
+        "token": token_real,
         "user": {
             "id": db_user.id,
             "name": db_user.name,

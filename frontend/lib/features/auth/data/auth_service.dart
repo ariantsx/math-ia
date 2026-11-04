@@ -1,3 +1,4 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import 'dart:async'; // ¡Importante agregar esto!
 import 'package:http/http.dart' as http;
@@ -7,6 +8,9 @@ class AuthService {
   // Reemplaza esto con la URL real de tu backend.
   // Si usas un emulador de Android y tu backend está en tu PC local, usa 'http://10.0.2.2:3000'
   final String _baseUrl = ApiConfig.baseUrl;
+
+  // Instanciamos el almacenamiento seguro
+  final _storage = const FlutterSecureStorage();
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
@@ -31,6 +35,12 @@ class AuthService {
         // Aquí normalmente el backend devuelve un Token (JWT)
         // String token = decodedData['token'];
 
+        final token =
+            decodedData['token']; // Asumiendo que tu backend devuelve {"token": "..."}
+
+        // ¡AQUÍ GUARDAMOS EL TOKEN EN EL DISPOSITIVO!
+        await _storage.write(key: 'jwt_token', value: token);
+
         return {
           'success': true,
           'message': 'Login exitoso',
@@ -51,6 +61,16 @@ class AuthService {
         'message': 'Error de conexión: Verifica tu internet o el servidor.',
       };
     }
+  }
+
+  // Verificar si hay una sesión activa guardada
+  Future<String?> getSavedToken() async {
+    return await _storage.read(key: 'jwt_token');
+  }
+
+  // Función para Cerrar Sesión (Log out)
+  Future<void> logout() async {
+    await _storage.delete(key: 'jwt_token'); // Borramos el token al salir
   }
 
   Future<Map<String, dynamic>> register(
