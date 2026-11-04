@@ -12,9 +12,10 @@ from security import get_password_hash, verify_password
 from pydantic import BaseModel
 import random
 from datetime import UTC, datetime, timedelta, timezone
-from typing import Dict, Any, List
+from typing import Dict, List
 from fastapi import HTTPException, BackgroundTasks
 import jwt
+from fastapi.security import OAuth2PasswordBearer
 
 # Importamos lo que creamos
 from database import engine, SessionLocal
@@ -207,6 +208,35 @@ async def login(user_data: LoginData, db: Session = Depends(get_db)):
             "id": db_user.id,
             "name": db_user.name,
             "email": db_user.email
+        }
+    }
+
+# Esta ruta solo es referencial para la documentación Swagger
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
+
+@app.get("/api/me")
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        # 1. Validar tiempo de expiración y decodificar el token criptográfico
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        
+        # 2. Extraer los datos directamente del payload (sin tocar la base de datos)
+        email = payload.get("sub")
+        user_id = payload.get("user_id")
+        
+        if not email or not user_id:
+            return JSONResponse(status_code=401, content={"message": "El token está incompleto o es inválido"})
+            
+    except jwt.ExpiredSignatureError:
+        return JSONResponse(status_code=401, content={"message": "El token ha expirado. Vuelva a iniciar sesión."})
+    except jwt.InvalidTokenError:
+        return JSONResponse(status_code=401, content={"message": "No se pudo validar el token de seguridad"})
+
+    # 3. Retornamos la información instantáneamente al frontend
+    return {
+        "user": {
+            "id": user_id,
+            "email": email
         }
     }
 

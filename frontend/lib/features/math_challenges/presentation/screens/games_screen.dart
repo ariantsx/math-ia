@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:math_ia/core/providers/user_provider.dart';
+import 'package:math_ia/features/auth/presentation/providers/auth_provider.dart';
 import 'package:math_ia/features/auth/presentation/screens/login_screen.dart';
 import 'package:math_ia/features/exams/presentation/providers/exams_provider.dart';
 import 'package:math_ia/features/friends/presentation/providers/friends_provider.dart';
@@ -18,7 +19,8 @@ class GamesScreen extends StatelessWidget {
     context.read<FriendsProvider>().clearData();
     context.read<LessonProvider>().clearData();
 
-    // 2. Aquí, más adelante, puedes borrar el Token (JWT) guardado en el dispositivo.
+    // 2. Aquí se borra el Token (JWT) guardado en el dispositivo.
+    context.read<AuthProvider>().logout();
 
     // 3. Navegación segura: Destruye el historial de pantallas y te lleva al Login
     Navigator.pushAndRemoveUntil(

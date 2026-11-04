@@ -63,9 +63,32 @@ class AuthService {
     }
   }
 
-  // Verificar si hay una sesión activa guardada
-  Future<String?> getSavedToken() async {
-    return await _storage.read(key: 'jwt_token');
+  Future<int?> verifyAndFetchSessionId() async {
+    final token = await _storage.read(key: 'jwt_token');
+    if (token == null) return null;
+
+    try {
+      final url = Uri.parse('$_baseUrl/api/me');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['user']['id'];
+      } else {
+        // Si responde 401 (token vencido o inválido), borramos el token
+        await logout();
+        return null;
+      }
+    } catch (e) {
+      // Error de red
+      return null;
+    }
   }
 
   // Función para Cerrar Sesión (Log out)

@@ -8,6 +8,24 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _isAuthenticated = false;
+  bool get isAuthenticated => _isAuthenticated;
+
+  // Llamada orquestadora para el arranque de la app
+  Future<int?> verifyAndFetchSession() async {
+    final userId = await _authService.verifyAndFetchSessionId();
+
+    if (userId != null) {
+      _isAuthenticated = true;
+      notifyListeners();
+      return userId;
+    }
+
+    _isAuthenticated = false;
+    notifyListeners();
+    return null;
+  }
+
   // Lógica de negocio encapsulada
   Future<Map<String, dynamic>> login(String email, String password) async {
     // 1. Avisar a la pantalla que empezamos a cargar
@@ -16,6 +34,10 @@ class AuthProvider extends ChangeNotifier {
 
     // 2. Llamar al backend
     final response = await _authService.login(email, password);
+    if (response['success']) {
+      _isAuthenticated = true;
+      notifyListeners();
+    }
 
     // 3. Avisar a la pantalla que terminamos de cargar
     _isLoading = false;
@@ -23,6 +45,12 @@ class AuthProvider extends ChangeNotifier {
 
     // 4. Retornar la respuesta para que la pantalla decida si navega o muestra error
     return response;
+  }
+
+  Future<void> logout() async {
+    await _authService.logout();
+    _isAuthenticated = false;
+    notifyListeners();
   }
 
   Future<Map<String, dynamic>> register(
