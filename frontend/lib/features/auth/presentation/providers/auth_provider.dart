@@ -82,6 +82,9 @@ class AuthProvider extends ChangeNotifier {
 
   // NUEVA FUNCIÓN: Confirmar el código
   Future<Map<String, dynamic>> verifyEmail(String code) async {
+    _isLoading = true;
+    notifyListeners();
+
     final response = await _authService.verifyEmailCode(_tempEmail!, code);
 
     if (response['success']) {
@@ -90,6 +93,9 @@ class AuthProvider extends ChangeNotifier {
       _tempEmail = null;
       notifyListeners();
     }
+
+    _isLoading = false;
+    notifyListeners();
 
     return response;
   }
