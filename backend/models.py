@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, JSON, DateTime, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, JSON, DateTime, ForeignKey, Table, Boolean
 from database import Base
 from sqlalchemy.orm import relationship
-import datetime
 
 # --- TABLA INTERMEDIA (Muchos a Muchos) ---
 tutor_student_association = Table(
@@ -68,6 +67,9 @@ class User(Base):
     # NUEVO: Campos para la vinculación integrados en el usuario
     link_code = Column(String(6), unique=True, nullable=True, index=True)
     link_code_expires_at = Column(DateTime, nullable=True)
+
+    is_verified = Column(Boolean, default=False)
+    verification_code = Column(String(6), nullable=True)
 
     # Relación inversa (Opcional, pero útil si el alumno quiere ver quién lo supervisa)
     tutors = relationship("Tutor", secondary=tutor_student_association, back_populates="students")

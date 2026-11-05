@@ -11,6 +11,12 @@ class AuthProvider extends ChangeNotifier {
   bool _isAuthenticated = false;
   bool get isAuthenticated => _isAuthenticated;
 
+  bool _isPendingVerification = false; // NUEVO ESTADO
+  bool get isPendingVerification => _isPendingVerification;
+
+  String? _tempEmail; // Guardamos el correo temporalmente para la verificación
+  String? get tempEmail => _tempEmail;
+
   // Llamada orquestadora para el arranque de la app
   Future<int?> verifyAndFetchSession() async {
     final userId = await _authService.verifyAndFetchSessionId();
@@ -62,9 +68,28 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     final response = await _authService.register(email, name, password);
+    if (response['success']) {
+      _isPendingVerification = true; // Entramos en modo verificación
+      _tempEmail = email; // Guardamos el correo
+      notifyListeners();
+    }
 
     _isLoading = false;
     notifyListeners();
+
+    return response;
+  }
+
+  // NUEVA FUNCIÓN: Confirmar el código
+  Future<Map<String, dynamic>> verifyEmail(String code) async {
+    final response = await _authService.verifyEmailCode(_tempEmail!, code);
+
+    if (response['success']) {
+      _isAuthenticated = true;
+      _isPendingVerification = false; // Salimos del modo verificación
+      _tempEmail = null;
+      notifyListeners();
+    }
 
     return response;
   }

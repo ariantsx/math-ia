@@ -78,6 +78,45 @@ def send_recovery_email(receiver_email: str, recovery_code: str):
     except requests.exceptions.RequestException as e:
         print(f"Error al enviar el correo vía API: {e}")
 
+import os
+import requests
+import random
+
+def send_verification_email(receiver_email: str, otp_code: str):
+    api_key = os.getenv("BREVO_API_KEY")
+    sender_email = os.getenv("EMAIL_SENDER")
+    
+    if not api_key or not sender_email:
+        return
+
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": api_key,
+        "content-type": "application/json"
+    }
+    
+    html_content = f"""
+    <div style="font-family: Arial, sans-serif; text-align: center; color: #333;">
+        <h2 style="color: #2196F3;">¡Bienvenido a MathIA!</h2>
+        <p>Para activar tu cuenta y guardar tu progreso, ingresa este código de verificación en la aplicación:</p>
+        <h1 style="background-color: #f4f4f4; padding: 10px; display: inline-block; letter-spacing: 5px;">
+            {otp_code}
+        </h1>
+    </div>
+    """
+
+    data = {
+        "sender": {"name": "Equipo MathIA", "email": sender_email},
+        "to": [{"email": receiver_email}],
+        "subject": "Código de Activación - MathIA",
+        "htmlContent": html_content
+    }
+    
+    try:
+        requests.post(url, headers=headers, json=data)
+    except Exception as e:
+        print(f"Error HTTP Brevo (Verificación): {e}")
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
@@ -113,6 +152,10 @@ class UserCreate(BaseModel):
     email: str
     name: str
     password: str
+
+class VerifyEmailRequest(BaseModel):
+    email: str
+    code: str
 
 class UserUpdateData(BaseModel):
     exp: int
@@ -192,6 +235,9 @@ async def login(user_data: LoginData, db: Session = Depends(get_db)):
     # 2. Validamos si el usuario existe
     if not db_user:
         return JSONResponse(status_code=401, content={"message": "El usuario no existe"})
+
+    if not db_user.is_verified:
+        return JSONResponse(status_code=401, content={"message": "El usuario existe pero no está verificado. Regístrese nuevamente."})
     
     # 3. --- AQUÍ APLICAMOS LA SEGURIDAD ---
     # Comparamos la contraseña enviada con el hash de la base de datos
@@ -241,41 +287,64 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     }
 
 @app.post("/api/register")
-async def register(user: UserCreate, db: Session = Depends(get_db)):
+async def register(user: UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    # Generar código OTP de 6 dígitos
+    code = str(random.randint(100000, 999999))
+
     # Verificamos si el email ya existe
     existing_user = db.query(models.User).filter(models.User.email == user.email).first()
     if existing_user:
-        return JSONResponse(status_code=400, content={"message": "El correo ya está registrado"})
-    
-    hashed_pwd = get_password_hash(user.password)
+        if existing_user.is_verified:
+            return JSONResponse(status_code=400, content={"message": "El correo ya está registrado y activado."})
+        else:
+            # Si el usuario abandonó el registro anterior a la mitad, reciclamos la cuenta
+            existing_user.verification_code = code
+            existing_user.name = user.name
+            existing_user.password = get_password_hash(user.password)
+            db.commit()
+        return {"message": "Código de verificación enviado al correo."}
 
     # Creamos la entidad User
     new_user = models.User(
-        email=user.email,
-        name=user.name,
-        password=hashed_pwd, # Guardamos el Hash, NUNCA el texto plano
-        exp=0,
-        coins=500,
-        lives=5,
-        inventory={"hats": [], "glasses": [], "shirts": []},
-        equipped={"hats": None, "glasses": None, "shirts": None},
-        skill_level=3
+        email = user.email,
+        name = user.name,
+        password = get_password_hash(user.password), # Guardamos el Hash, NUNCA el texto plano
+        verification_code = code,
     )
     
     # Guardamos en la base de datos
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+    
+    # Enviar el correo en segundo plano
+    background_tasks.add_task(send_verification_email, user.email, code)
+    
+    return {"message": "Código de verificación enviado al correo."}
 
-    # Es buena práctica incluir el correo y el ID dentro del token
-    token_real = create_access_token(data={"sub": new_user.email, "user_id": new_user.id})
+@app.post("/api/verify-email")
+def verify_email(request: VerifyEmailRequest, db: Session = Depends(get_db)):
+    # 1. Buscar al usuario en la base de datos
+    db_user = db.query(models.User).filter(models.User.email == request.email).first()
+    
+    # 2. Validar que el código coincida
+    if not db_user or db_user.verification_code != request.code:
+        return JSONResponse(status_code=400, content={"message": "Código incorrecto o expirado."})
+        
+    # 3. Activar usuario y limpiar el código temporal
+    db_user.is_verified = True
+    db_user.verification_code = None
+    db.commit()
+    
+    # 4. Generar el JWT real para iniciar la sesión automáticamente en Flutter
+    token_real = create_access_token(data={"sub": db_user.email, "user_id": db_user.id})
     
     return {
-        "token": token_real, 
+        "token": token_real,
         "user": {
-            "id": new_user.id,
-            "name": new_user.name,
-            "email": new_user.email
+            "id": db_user.id,
+            "name": db_user.name,
+            "email": db_user.email
         }
     }
 

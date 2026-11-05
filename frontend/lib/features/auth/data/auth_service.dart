@@ -122,12 +122,49 @@ class AuthService {
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
 
-        final token =
-            decodedData['token']; // Asumiendo que tu backend devuelve {"token": "..."}
+        return {
+          'success': true,
+          'message':
+              decodedData['message'] ??
+              'Se envió el correo de confirmación con el código.',
+        };
+      } else {
+        final decodedError = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': decodedError['message'] ?? 'Error al registrar',
+        };
+      }
+    } on TimeoutException catch (_) {
+      return {
+        'success': false,
+        'message': 'El servidor tardó demasiado en responder.',
+      };
+    } catch (e) {
+      return {'success': false, 'message': 'Error de conexión.'};
+    }
+  }
 
-        // ¡AQUÍ GUARDAMOS EL TOKEN EN EL DISPOSITIVO!
+  // 2. NUEVA FUNCIÓN: Verificar el código OTP ingresado por el usuario
+  Future<Map<String, dynamic>> verifyEmailCode(
+    String email,
+    String code,
+  ) async {
+    final url = Uri.parse('$_baseUrl/api/verify-email');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'email': email, 'code': code}),
+      );
+
+      if (response.statusCode == 200) {
+        // Si el código es correcto, el backend devuelve el JWT final.
+        // Lo guardamos de forma segura como en el logins.
+        final decodedData = json.decode(response.body);
+        final token = decodedData['token'];
+
         await _storage.write(key: 'jwt_token', value: token);
-
         return {
           'success': true,
           'message': decodedData['message'] ?? 'Registro exitoso',
@@ -137,7 +174,7 @@ class AuthService {
         final decodedError = jsonDecode(response.body);
         return {
           'success': false,
-          'message': decodedError['message'] ?? 'Error al registrar',
+          'message': decodedError['message'] ?? 'Error al verificar el código',
         };
       }
     } on TimeoutException catch (_) {
