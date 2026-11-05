@@ -107,9 +107,9 @@ def send_verification_email(receiver_email: str, otp_code: str):
     """
 
     data = {
-        "sender": {"name": "Equipo MathIA", "email": sender_email},
+        "sender": {"name": "Soporte MathIA", "email": sender_email},
         "to": [{"email": receiver_email}],
-        "subject": "Código de Activación - MathIA",
+        "subject": "Código de Verificación - MathIA",
         "htmlContent": html_content
     }
     
@@ -428,6 +428,9 @@ async def forgot_password(request: ForgotPasswordRequest, background_tasks: Back
         # Por seguridad, siempre devolvemos éxito incluso si el correo no existe
         # Así los hackers no pueden usar esto para adivinar qué correos están registrados
         return {"success": True, "message": "Si el correo existe, se ha enviado un código."}
+
+    if not user.is_verified:
+        return JSONResponse(status_code=401, content={"message": "El usuario existe pero no está verificado. Regístrese nuevamente."})
     
     # Generamos código de 6 dígitos
     code = str(random.randint(100000, 999999))

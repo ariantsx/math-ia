@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:math_ia/core/providers/user_provider.dart';
 import 'package:math_ia/features/auth/presentation/screens/login_screen.dart';
 import 'package:math_ia/features/auth/presentation/screens/verification_screen.dart';
 import 'package:provider/provider.dart';
