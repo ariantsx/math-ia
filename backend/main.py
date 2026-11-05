@@ -266,9 +266,12 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    # Es buena práctica incluir el correo y el ID dentro del token
+    token_real = create_access_token(data={"sub": new_user.email, "user_id": new_user.id})
     
     return {
-        "token": "fake-jwt-token-12345", 
+        "token": token_real, 
         "user": {
             "id": new_user.id,
             "name": new_user.name,

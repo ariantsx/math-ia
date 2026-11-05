@@ -121,6 +121,13 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final decodedData = jsonDecode(response.body);
+
+        final token =
+            decodedData['token']; // Asumiendo que tu backend devuelve {"token": "..."}
+
+        // ¡AQUÍ GUARDAMOS EL TOKEN EN EL DISPOSITIVO!
+        await _storage.write(key: 'jwt_token', value: token);
+
         return {
           'success': true,
           'message': decodedData['message'] ?? 'Registro exitoso',
