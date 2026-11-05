@@ -164,10 +164,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Enlace para ir al Registro
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RegisterScreen(),
+                          builder: (_) => const RegisterScreen(),
                         ),
                       );
                     },

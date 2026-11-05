@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:math_ia/core/providers/user_provider.dart';
+import 'package:math_ia/features/auth/presentation/screens/login_screen.dart';
 import 'package:math_ia/features/auth/presentation/screens/verification_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -33,7 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (response['success']) {
       if (!mounted) return;
 
-      // Destruimos el historial de navegación y lo enviamos a la pantalla de verificación
+      // 3. Destruimos el historial de navegación y lo enviamos a la pantalla de verificación
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
@@ -168,8 +169,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   // Enlace para volver al Login
                   TextButton(
                     onPressed: () {
-                      // Usamos pop para destruir esta pantalla en lugar de apilar una nueva
-                      Navigator.pop(context);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
                     },
                     child: const Text(
                       '¿Ya tienes una cuenta? Inicia sesión',
